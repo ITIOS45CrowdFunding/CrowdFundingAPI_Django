@@ -32,7 +32,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Database configuration
 DATABASES = {
-    'default': env.db()
+     'default': env.db(default='sqlite:///db.sqlite3'),
 }
 
 
