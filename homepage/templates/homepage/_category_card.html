@@ -1,0 +1,16 @@
+{% load static %}
+<a class="group">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-300 h-full">
+
+        {% comment %} <div class="relative h-40 overflow-hidden">
+            <img src="{% static category.image.url %}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                 alt="{{ category.name }}">
+        </div> {% endcomment %}
+        
+        <div class="p-4">
+            <h3 class="text-lg font-bold text-gray-900 mb-1">{{ category.name }}</h3>
+            {% comment %} <p class="text-gray-600 text-sm">{{ category.project_count }} projects</p> {% endcomment %}
+        </div>
+    </div>
+</a>

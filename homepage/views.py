@@ -2,7 +2,7 @@ from django.shortcuts import render
 from datetime import datetime, timedelta
 import random
 
-def test(request):
+def home(request):
     featured_projects = []
     for i in range(4):
         featured_projects.append({
@@ -15,7 +15,19 @@ def test(request):
             'progress_percentage': random.randint(20, 80),
             'category': {"name": "test"}
         })
+        
+    categories = [
+        {"name": "Technology"},
+        {"name": "Health"},
+        {"name": "Education"},
+        {"name": "Environment"},
+        {"name": "Art"},
+        {"name": "Community"}
+    ]
     
-    return render(request, 'homepage/test.html', {
+    return render(request, 'homepage/home.html', {
         'featured_projects': featured_projects
+        , 'categories': categories
     })
+    
+    
