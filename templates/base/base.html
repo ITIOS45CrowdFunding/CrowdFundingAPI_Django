@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}CrowdFunding{% endblock %}</title>
+    {% load static %}
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100">
+    <header>
+      {% include 'base/header.html' %} {% block header %}{% endblock %}
+    </header>
+
+    <main class="container mx-auto px-4">
+      {% block content %}{% endblock %}
+    </main>
+
+    {% comment %}
+    <footer>{% block footer %}{% endblock %}</footer>
+    {% endcomment %}
+  </body>
+</html>
