@@ -6,18 +6,22 @@
     <title>{% block title %}CrowdFunding{% endblock %}</title>
     {% load static %}
     <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body class="bg-gray-100">
-    <header>
-      {% include 'base/header.html' %} {% block header %}{% endblock %}
-    </header>
+    <header>{% include 'base/header.html' %}</header>
 
-    <main class="container mx-auto px-4">
+    <main class="container mx-auto px-4 my-5">
       {% block content %}{% endblock %}
     </main>
 
     {% comment %}
     <footer>{% block footer %}{% endblock %}</footer>
     {% endcomment %}
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
   </body>
 </html>
