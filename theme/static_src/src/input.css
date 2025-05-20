@@ -1,0 +1,3 @@
+/* theme/static_src/src/input.css */
+@import "tailwindcss/preflight";
+@tailwind utilities;
