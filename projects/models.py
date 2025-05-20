@@ -1,3 +1,60 @@
 from django.db import models
 
-# Create your models here.
+class ProjectCategory(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+class Project(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+    title = models.CharField(max_length=255)
+    details = models.TextField()
+    target = models.IntegerField()
+    startDate = models.DateField()
+    endDate = models.DateField()
+    category = models.ForeignKey(ProjectCategory, on_delete=models.SET_NULL, null=True)
+    isFeatured = models.BooleanField(default=False)
+    isCancelled = models.BooleanField(default=False)
+
+    tags = models.ManyToManyField(Tag, through='ProjectTag')
+
+    def __str__(self):
+        return self.title
+
+class ProjectTag(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('project', 'tag')  # optional but good practice
+
+class ProjectImage(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='project_images/')
+
+class Donation(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+
+class Report(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    reason = models.TextField()
+
+class Rating(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    value = models.IntegerField()
+
+class Comment(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    text = models.TextField()
