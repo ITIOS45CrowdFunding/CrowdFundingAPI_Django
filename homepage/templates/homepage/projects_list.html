@@ -1,0 +1,22 @@
+{% extends "base/base.html" %} {% load static %} {% block content %}
+    <section class="mt-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                {% if search %}
+                    Search Results for "{{ search }}"
+                {% else %}
+                    All Projects
+                {% endif %}
+            </h2>
+        {% if projects %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for project in projects %} 
+                {% include 'homepage/_project_card.html' with project=project %} {% endfor %}
+            </div>
+        {% else %}
+            <p>No projects found</p>
+        {% endif %}
+        
+        </div>
+    </section>
+{% endblock %}

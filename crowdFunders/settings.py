@@ -93,7 +93,7 @@ ROOT_URLCONF = 'crowdFunders.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,6 +156,7 @@ MEDIA_ROOT=BASE_DIR/'media'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'theme' / 'static_src' / 'src',  # raw tailwind source (optional)
+    BASE_DIR / 'homepage' / 'static', 
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -168,6 +169,10 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

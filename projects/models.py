@@ -1,5 +1,7 @@
 from django.db import models
-from django.conf import settings
+
+from django.contrib.auth.models import User
+from django.db.models import Avg, Sum, Count
 class ProjectCategory(models.Model):
     name = models.CharField(max_length=255)
 
@@ -13,7 +15,8 @@ class Tag(models.Model):
         return self.name
 
 class Project(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
     details = models.TextField()
     target = models.IntegerField()
@@ -24,7 +27,39 @@ class Project(models.Model):
     isCancelled = models.BooleanField(default=False)
 
     tags = models.ManyToManyField(Tag, through='ProjectTag')
+    
+    @property
+    def days_remaining(self):
+        from datetime import datetime
+        return (self.endDate - datetime.now().date()).days
+    
+    @property
+    def current_amount(self):
+        from django.db.models import Sum
+        return self.donation_set.aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    @property
+    def progress_percentage(self):
+        if self.target > 0:
+            return round((self.current_amount / self.target) * 100, 2)
+        return 0
 
+
+    @property
+    def total_donations(self):
+        return self.donation_set.aggregate(total=Sum('amount'))['total'] or 0
+
+    @property
+    def average_rating(self):
+        return round(self.rating_set.aggregate(avg=Avg('value'))['avg'] or 0, 1)
+
+    @property
+    def comment_count(self):
+        return self.comment_set.count()
+
+    @property
+    def report_count(self):
+        return self.report_set.count()
     def __str__(self):
         return self.title
 
@@ -41,20 +76,24 @@ class ProjectImage(models.Model):
 
 class Donation(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
 
 class Report(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     reason = models.TextField()
 
 class Rating(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     value = models.IntegerField()
 
 class Comment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
