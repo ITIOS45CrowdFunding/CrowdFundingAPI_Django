@@ -1,0 +1,126 @@
+{% extends 'projects/base.html' %}
+
+{% block title %}
+    Create Project
+{% endblock %}
+
+{%block head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl space-y-6 flex-grow">
+    <h2 class="text-3xl font-semibold text-center text-gray-800">Create New Project</h2>
+
+    {% if form.non_field_errors %}
+        <div class="bg-red-100 text-red-700 p-4 rounded-xl mb-4">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST"  enctype="multipart/form-data" class="space-y-5">
+        {% csrf_token %}
+
+        <!-- Title -->
+        <div>
+            <label for="title" class="block text-gray-700 font-medium mb-1">Title</label>
+            <input type="text" id="title" name="title" value="{{ form.title.value|default_if_none:"" }}" class="w-full border {% if form.title.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+            {% for error in form.title.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- details -->
+        <div>
+            <label for="details" class="block text-gray-700 font-medium mb-1">details</label>
+            <textarea id="details" name="details" rows="4" class="w-full border {% if form.details.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none resize-y">
+                {{ form.details.value|default_if_none:"" }}
+            </textarea>
+            {% for error in form.details.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- Target -->
+        <div>
+            <label for="target" class="block text-gray-700 font-medium mb-1">Target</label>
+            <input type="number" id="target" name="target" value="{{ form.target.value }}" class="w-full border {% if form.target.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+            {% for error in form.target.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- Dates -->
+        <div class="flex gap-4">
+            <div class="w-1/2">
+                <label for="startDate" class="block text-gray-700 font-medium mb-1">Start Date</label>
+                <input type="date" id="startDate" name="startDate" value="{{ form.startDate.value }}" class="w-full border {% if form.startDate.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+                {% for error in form.startDate.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="w-1/2">
+                <label for="endDate" class="block text-gray-700 font-medium mb-1">End Date</label>
+                <input type="date" id="endDate" name="endDate" value="{{ form.endDate.value }}" class="w-full border {% if form.endDate.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+                {% for error in form.endDate.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Category -->
+        <div>
+            <label for="category" class="block text-gray-700 font-medium mb-1">Category</label>
+            <select id="category" name="category" class="w-full border {% if form.category.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
+                <option value="">Select a category</option>
+                {% for value, label in form.category.field.choices %}
+                    <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            {% for error in form.category.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- Tags -->
+        <div>
+            <label for="tag-input" class="block text-gray-700 font-medium mb-1">Tags</label>
+            <input name="tags" id="tag-input" value="{{ form.tags.value|default_if_none:"" }}" class="tag-input w-full border {% if form.tags.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2"  />
+
+            {% for error in form.tags.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div>
+            <label for="images" class="block text-gray-700 font-medium mb-1">Images</label>
+            <input type="file" name="images" multiple accept="image/*" class="w-full border {% if form.images.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
+            {% for error in form.images.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-xl shadow-md transition duration-300">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script>
+  fetch('/projects/tag-list/')
+    .then(res => res.json())
+    .then(tagList => {
+      new Tagify(document.querySelector('#tag-input'), {
+        whitelist: tagList,
+        enforceWhitelist: false,
+        dropdown: {
+          enabled: 1,
+          fuzzySearch: true
+        }
+      });
+    });
+</script>
+{% endblock %}

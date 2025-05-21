@@ -173,7 +173,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+#uploaded Files
+media
+
 staticfiles
 static
-media/*
 migrations
