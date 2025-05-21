@@ -31,8 +31,28 @@ def category(request, category_id):
     
     
 def project_list(request):
-    projects = Project.objects.filter(isCancelled=False).order_by('-startDate')
+    search = request.GET.get('search')
+    
+    projects = []
+    
+    if search:
+        projects = Project.objects.filter(Q(title__icontains=search) | Q(tags__name__icontains=search)).distinct()
+    else:
+        projects = Project.objects.filter(isCancelled=False).order_by('-startDate')
     
     return render(request, 'homepage/projects_list.html', {
+        'search': search,
         'projects': projects
+    })
+    
+    
+def search(request):
+    query = request.GET.get('search')
+    
+    results = Project.objects.filter(Q(title__icontains=query) | Q(tags__name__icontains=query)).distinct()
+    print(results)
+    
+    return render(request, "homepage/search_results.html", {
+        'search': query,
+        'projects': results
     })
