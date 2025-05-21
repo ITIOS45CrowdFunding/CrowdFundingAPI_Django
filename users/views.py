@@ -1,13 +1,17 @@
-from django.shortcuts import render,redirect
-from .forms import SignUpForm
+from django.shortcuts import render,redirect,HttpResponse
+from .forms import SignUpForm,LoginForm
 from .models import Profile
-from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
 from django.utils.encoding import force_bytes,force_str
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
 from .token import activation_token
+from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate,login as auth_login
+
+
+User = get_user_model()
 # Create your views here.
 
 def signUp(request):
@@ -54,7 +58,21 @@ def activate(request,uidb64,token):
         return render(request, 'users/activation_error.html')
 
 def login(request):
-    return render(request,'users/login.html')
+    form=LoginForm(request.POST or None)
+    error=None
+    if request.method=='POST' and form.is_valid():
+        email=form.cleaned_data['email']
+        password=form.cleaned_data['password1']
+        user=authenticate(request,email=email,password=password)
+        if user is not None:
+            if user.is_active:
+                auth_login(request,user)
+                return HttpResponse('login success')
+            else:
+                error="Account is not Activated Yet , Please Check Your mail"
+        else:
+            error="Invalid email or Password"
+    return render(request,'users/login.html',{'form':form,'error':error})
 
 def activate_page(request):
     username=request.session.pop('newuser')

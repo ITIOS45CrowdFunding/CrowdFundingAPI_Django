@@ -1,6 +1,5 @@
 # generate token for user activation
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-import six
 
 class AccountActivationToken(PasswordResetTokenGenerator):
     def _generate_token(self, user, timestamp):

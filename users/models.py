@@ -1,9 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.conf import settings
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
 
-# Create your models here.
+    def __str__(self):
+        return self.username  
 class Profile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     phone=models.CharField(max_length=14,blank=True,null=True)
     image=models.ImageField(upload_to='profile_images/',blank=True)
     birthdate=models.DateField(blank=True,null=True)
