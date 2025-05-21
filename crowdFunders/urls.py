@@ -25,7 +25,7 @@ urlpatterns = [
     path("users/",include('users.urls',namespace='users')),
     path("projects/",include('projects.urls', namespace='projects')),
     path("home/",include('homepage.urls',namespace='home'))
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
 
 
 if settings.DEBUG:
