@@ -29,3 +29,10 @@ def category(request, category_id):
         'category': category
     })
     
+    
+def project_list(request):
+    projects = Project.objects.filter(isCancelled=False).order_by('-startDate')
+    
+    return render(request, 'homepage/projects_list.html', {
+        'projects': projects
+    })
