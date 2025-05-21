@@ -32,8 +32,16 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Database configuration
 DATABASES = {
-     'default': env.db(default='sqlite:///db.sqlite3'),
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('DBNAME'),
+        'USER': env('USER'),
+        'PASSWORD': env('PASSWORD'),
+        'HOST': env('HOST'),
+        'PORT': env('PORT'),
+    }
 }
+
 
 
 from pathlib import Path
@@ -103,12 +111,6 @@ WSGI_APPLICATION = 'crowdFunders.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -147,8 +149,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+# handle images
+MEDIA='media/'
+MEDIA_URL='/media/'
+MEDIA_ROOT=BASE_DIR/'media'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'theme' / 'static_src' / 'src',  # raw tailwind source (optional)
@@ -165,3 +169,11 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env('EMAIL_HOST')
+EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
+EMAIL_USE_TLS = True
