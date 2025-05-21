@@ -175,7 +175,3 @@ cython_debug/
 
 #uploaded Files
 media
-
-staticfiles
-static
-migrations

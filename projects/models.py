@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg, Sum, Count
+
 
 class ProjectCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -43,6 +45,21 @@ class Project(models.Model):
         return 0
 
 
+    @property
+    def total_donations(self):
+        return self.donation_set.aggregate(total=Sum('amount'))['total'] or 0
+
+    @property
+    def average_rating(self):
+        return round(self.rating_set.aggregate(avg=Avg('value'))['avg'] or 0, 1)
+
+    @property
+    def comment_count(self):
+        return self.comment_set.count()
+
+    @property
+    def report_count(self):
+        return self.report_set.count()
     def __str__(self):
         return self.title
 
