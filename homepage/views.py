@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from datetime import datetime, timedelta
-import random
+from datetime import datetime
 from projects.models import ProjectCategory, Project, ProjectImage, Tag, Rating
 from django.db.models import Avg
 from django.db.models import Q
+from django.http import JsonResponse
 
 def home(request):
     current_date = datetime.now().date()
@@ -46,13 +46,15 @@ def project_list(request):
     })
     
     
-def search(request):
-    query = request.GET.get('search')
+def autocompelete(request):
+    search = request.GET.get('search', '').strip()
     
-    results = Project.objects.filter(Q(title__icontains=query) | Q(tags__name__icontains=query)).distinct()
-    print(results)
+    results = []
     
-    return render(request, "homepage/search_results.html", {
-        'search': query,
-        'projects': results
-    })
+    if search:
+        title_matches = Project.objects.filter(title__icontains=search).values_list('title', flat=True)
+        tag_matches = Tag.objects.filter(name__icontains=search).values_list('name', flat=True)
+        results = list(set(title_matches) | set(tag_matches))[:10]
+        
+    return JsonResponse({'suggestions': results})
+    

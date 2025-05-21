@@ -1,4 +1,4 @@
-<nav class="bg-white shadow-lg">
+<nav class="bg-white shadow-lg relative">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between h-16">
       <div class="flex">
@@ -19,9 +19,12 @@
         </div>
       </div>
       <div class="flex items-center">
-        <form method="get" action="{% url 'home:projects_list' %}" class="flex me-2">
-          <input type="text"  name="search" placeholder="Search by title or tag" class="px-4 py-2 border border-gray-300 rounded-s-md" id="search-input" />
-          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-e-md">Search</button>
+        <form id="search-form" method="get" action="{% url 'home:projects_list' %}" autocomplete="off" class="flex me-2 relative z-20">
+          <input type="text" name="search" id="search-input"
+                 placeholder="Search projects or tags..."
+                 class="px-4 py-2 border rounded w-full border-gray-300 rounded-s-md" />
+          <ul id="autocomplete-list"
+              class="absolute bg-white w-full border border-gray-300 rounded-md z-50 shadow-md hidden" style="top: 100%; margin-bottom: 4px; z-index: 50;"></ul>
         </form>
         {% if user.is_authenticated %}
         <a class="text-gray-900 hover:text-gray-700 px-3 py-2">Logout</a>
@@ -33,3 +36,52 @@
     </div>
   </div>
 </nav>
+
+<script>
+  const input = document.getElementById('search-input');
+  const list = document.getElementById('autocomplete-list');
+
+  input.addEventListener('input', function () {
+    const search = this.value.trim();
+
+    if (search.length < 2) {
+      list.classList.add('hidden');
+      list.innerHTML = '';
+      return;
+    }
+
+    fetch("{% url 'home:autocomplete' %}?search=" + encodeURIComponent(search))
+      .then(response => response.json())
+      .then(data => {
+        const suggestions = data.suggestions || [];
+        list.innerHTML = '';
+
+        if (suggestions.length === 0) {
+          list.classList.add('hidden');
+          return;
+        }
+
+        suggestions.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100 ';
+          li.onclick = () => {
+            input.value = item;
+            list.classList.add('hidden');
+            input.form.submit();
+          };
+          list.appendChild(li);
+        });
+
+        list.classList.remove('hidden');
+      })      
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!input.contains(e.target) && !list.contains(e.target)) {
+        list.innerHTML = '';
+        list.classList.add('hidden');
+    }
+});
+</script>
+
