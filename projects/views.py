@@ -90,13 +90,32 @@ def details(request,project_id):
 def update_project(request,project_id):
     pass
 def donate(request,project_id):
-    pass
+    project = get_object_or_404(Project,id=project_id)
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        try:
+            amount = float(amount)
+            if amount <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            return render(request, 'projects/donate.html', {'project': project, 'error': 'Please enter a valid amount'})
+        
+        donation = Donation(amount=amount, project=project, user=User.objects.get(pk=1)) #remeber to adjust this(user)
+        donation.save()
+        return redirect('projects:details', project_id=project_id)
+    return render(request, 'projects/donate.html', {'project': project})
 
 def add_comment(request,project_id):
     pass
 
 def report_project(request,project_id):
-    pass
+    project = Project.objects.get(id = project_id)
+    if(request.method == 'POST'):
+        reason = request.POST.get('reason')
+        if reason:
+            report = Report(reason=reason, project=project, user=User.objects.get(pk=1)) #remeber to adjust this(user)
+            report.save()
+
 
 def rate_project(request,project_id):
     pass
