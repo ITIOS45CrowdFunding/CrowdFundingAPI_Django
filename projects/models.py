@@ -27,6 +27,23 @@ class Project(models.Model):
     isCancelled = models.BooleanField(default=False)
 
     tags = models.ManyToManyField(Tag, through='ProjectTag')
+    
+    @property
+    def days_remaining(self):
+        from datetime import datetime
+        return (self.endDate - datetime.now().date()).days
+    
+    @property
+    def current_amount(self):
+        from django.db.models import Sum
+        return self.donation_set.aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    @property
+    def progress_percentage(self):
+        if self.target > 0:
+            return round((self.current_amount / self.target) * 100, 2)
+        return 0
+
 
     @property
     def total_donations(self):

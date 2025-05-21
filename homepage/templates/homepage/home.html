@@ -1,0 +1,59 @@
+{% extends "base/base.html" %} {% load static %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+  {% include 'homepage/slider.html' with highest_rated_projects=highest_rated_projects %}
+<!-- Categories Section -->
+<section class="mt-16 bg-gray-50 py-12 rounded-2xl">
+  <div class="container mx-auto px-4">
+      <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-gray-900">Browse by Category</h2>
+          <p class="text-gray-600 mt-2">Find projects that match your interests</p>
+      </div>
+      
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          {% for category in categories %}
+              {% include "homepage/_category_card.html" with category=category %}
+          {% endfor %}
+      </div>
+  </div>
+</section>
+  <!-- Latest Projects Section -->
+  <section class="mt-12">
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Latest Projects</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in latest_projects %} 
+        {% include 'homepage/_project_card.html' with project=project %} {% endfor %}
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="{% url 'home:projects_list' %}"
+          class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-6 rounded-lg transition duration-200"
+        >
+          View All Projects
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- featured Projects Section -->
+  <section class="mt-12">
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">featured Projects</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in featured_projects %} 
+        {% include 'homepage/_project_card.html' with project=project %} {% endfor %}
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="{% url 'home:projects_list' %}"
+          class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-6 rounded-lg transition duration-200"
+        >
+          View All Projects
+        </a>
+      </div>
+    </div>
+  </section>
+  
+</div>
+{% endblock %}
