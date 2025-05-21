@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.forms.widgets import ClearableFileInput
 from .models import Profile
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 egyption_number=RegexValidator(
     regex=r'^01[0-2,5]{1}[0-9]{8}$',
@@ -54,3 +55,16 @@ class SignUpForm(UserCreationForm):
         model=User
         fields=['first_name','last_name','username','email','password1','password2','mobile_phone','image']
     
+class LoginForm(forms.Form):
+    email=forms.CharField(max_length=100,required=True,widget=forms.EmailInput(attrs={
+         'placeholder':'Enter Your Email',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    password1=forms.CharField(required=True,widget=forms.PasswordInput(attrs={
+        'placeholder':'Enter Your Password',
+        'class':'w-full p-4 rounded-lg bg-white',
+        'type':'password'
+    }))
+    class Meta:
+        Model=User
+        fields=['email','password1']

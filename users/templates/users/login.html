@@ -1,10 +1,39 @@
 {% extends 'users/base.html' %}
 
 {% block title %}
-    Login
+   Login
 {% endblock  %}
 
 {% block content %}
-    <h1>Login</h1>
-{% endblock  %}
+    <div class="flex items-center justify-center ">
+        <div class="flex flex-col w-1/2 items-center justify-center bg-gray-100 p-4 rounded-xl shadow-xl">
+            <h1 class="font-semibold text-2xl font-mono text-green-700 mb-10">Login</h1>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-5">
+                    <label for="email" class="font-semibold text-lg mb-2">Email</label>
+                    {{ form.email }}
+                </div>
+      
+                <div class="mb-5">
+                    <label for="password" class="font-semibold text-lg mb-2">Password</label>
+                    {{ form.password1 }}
+                </div>
+              
+                
+                {% if error %}
+                <div class="text-red-600 text-sm"> 
+                        {{ error}}
+                </div>
+                {% endif %}
+                    
+              
+
+                <button type="submit" class="mt-5 bg-green-700 cursor-pointer px-8 py-2 text-white font-semibold hover:opacity-[0.7] rounded-xl">Login</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
     
