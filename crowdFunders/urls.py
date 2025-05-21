@@ -17,17 +17,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
+<<<<<<< HEAD
 # from django.conf.urls import url
 from django.conf.urls.static import static
 
 
+=======
+from django.conf.urls.static import static
+
+>>>>>>> 17f77346ef61284f457213d5cc9c01b5470db4a7
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("users/",include('users.urls',namespace='users')),
-    path("projects/",include('projects.urls',namespace='projects'))
+    path("projects/",include('projects.urls', namespace='projects')),
+    path("home/",include('homepage.urls',namespace='home'))
 ]
 
+
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
