@@ -20,3 +20,12 @@ def home(request):
     })
     
     
+def category(request, category_id):
+    category = ProjectCategory.objects.get(id=category_id)
+    projects = Project.objects.filter(category=category, isCancelled=False).order_by('-startDate')
+    
+    return render(request, 'homepage/category.html', {
+        'projects': projects,
+        'category': category
+    })
+    
