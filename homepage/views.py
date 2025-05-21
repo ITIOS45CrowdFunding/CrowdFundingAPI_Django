@@ -1,33 +1,22 @@
 from django.shortcuts import render
 from datetime import datetime, timedelta
 import random
+from projects.models import ProjectCategory, Project, ProjectImage, Tag, Rating
+from django.db.models import Avg
+from django.db.models import Q
 
 def home(request):
-    featured_projects = []
-    for i in range(4):
-        featured_projects.append({
-            'id': i+1,
-            'title': f"Featured Project {i+1}",
-            'short_description': f"Help us achieve our goal for project {i+1}",
-            'current_amount': random.randint(10000, 100000),
-            'total_target': random.randint(100000, 500000),
-            'image_url': f"homepage/images/project{i+1}.jpg",
-            'progress_percentage': random.randint(20, 80),
-            'category': {"name": "test"}
-        })
+    current_date = datetime.now().date()
+    highest_rated_projects = Project.objects.filter(isCancelled=False, endDate__gte=current_date).annotate(avg_rating=Avg("rating__value")).order_by('-avg_rating')[:5]
+    latest_projects = Project.objects.filter(isCancelled=False).order_by('-startDate')[:5]
+    featured_projects = Project.objects.filter(isFeatured=True, isCancelled=False).order_by('-startDate')[:5]
+    categories = ProjectCategory.objects.all()
         
-    categories = [
-        {"name": "Technology"},
-        {"name": "Health"},
-        {"name": "Education"},
-        {"name": "Environment"},
-        {"name": "Art"},
-        {"name": "Community"}
-    ]
-    
     return render(request, 'homepage/home.html', {
-        'featured_projects': featured_projects
-        , 'categories': categories
+        'highest_rated_projects': highest_rated_projects, 
+        'latest_projects': latest_projects,
+        'featured_projects': featured_projects, 
+        'categories': categories
     })
     
     

@@ -3,17 +3,18 @@
 <div id="featured-carousel" class="relative w-full" data-carousel="slide">
     <div class="relative h-96 overflow-hidden rounded-xl">
       <!-- Slides -->
-      {% for project in featured_projects %}
+      {% for project in highest_rated_projects %}
       <div
         class="{% if forloop.first %}duration-700 ease-in-out{% else %}hidden duration-700 ease-in-out{% endif %}"
         data-carousel-item
       >
+      {% with project.projectimage_set.first as image %}
         <img
-          src="{% static project.image_url %}"
+          src="{{ image.image.url }}"
           class="absolute block w-full h-full object-cover"
           alt="{{ project.title }}"
         />
-
+      {% endwith %}
         <div
           class="absolute inset-0 bg-black/40 bg-opacity-10 flex items-end pb-12"
         >
