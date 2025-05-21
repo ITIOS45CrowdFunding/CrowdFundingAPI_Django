@@ -2,11 +2,11 @@ import json
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import ProjectForm
 from .models import Tag, ProjectImage, Project
-from django.contrib.auth.models import User
+from users.models import CustomUser as User
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Project, ProjectCategory, Tag, ProjectTag, ProjectImage, Donation, Report, Rating, Comment
+from .models import Project, Tag, ProjectTag, ProjectImage, Donation, Report, Rating, Comment
 from datetime import date
 from django.db import models
 
@@ -30,15 +30,14 @@ def create_project(request):
                     tag, _ = Tag.objects.get_or_create(name=name)
                     project.tags.add(tag)
             except json.JSONDecodeError:
-                form.add_error('tags', 'Tags format is invalid.')
-                return render(request, 'projects/create.html', {'form': form})
+                return render(request, 'projects/create.html', {'form': form,"tag_error":"Tags format is invalid."})
             # Save images
             for file in request.FILES.getlist('images'):
                 ProjectImage.objects.create(project=project, image=file)
 
         else:
             return render(request, 'projects/create.html', {'form': form})
-        return redirect('some_success_url')
+        return redirect('projects:my_projects')
     
     return render(request, 'projects/create.html', {'form': form})
 
@@ -116,7 +115,7 @@ def cancel_project(request,project_id):
         project.save()
         return redirect('projects:my_projects')
 def edit_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id, user=request.user)
+    project = get_object_or_404(Project, id=project_id)
 
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES, instance=project)
@@ -154,7 +153,7 @@ def edit_project(request, project_id):
 # from django.contrib.auth.decorators import login_required
 # @login_required
 def delete_image(request, image_id):
-    image = get_object_or_404(ProjectImage, id=image_id, project__user=request.user)
+    image = get_object_or_404(ProjectImage, id=image_id)
     project_id = image.project.id
     image.delete()
     return redirect('projects:edit_project', project_id=project_id)
