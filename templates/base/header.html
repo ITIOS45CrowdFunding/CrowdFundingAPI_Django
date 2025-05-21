@@ -7,10 +7,12 @@
         </div>
         <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
           <a
+            href="{% url 'home:home' %}"
             class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300"
             >Home</a
           >
           <a
+            href={% url "home:projects_list" %}
             class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300"
             >Projects</a
           >
