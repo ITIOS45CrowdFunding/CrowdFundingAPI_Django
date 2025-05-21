@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 
 def create_project(request):
     form = ProjectForm()
-
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
@@ -29,16 +28,14 @@ def create_project(request):
                 form.add_error('tags', 'Tags format is invalid.')
                 print(form.errors)
                 return render(request, 'projects/create.html', {'form': form})
-            
             # Save images
             for file in request.FILES.getlist('images'):
                 ProjectImage.objects.create(project=project, image=file)
 
         else:
-            print(form.errors)
             return render(request, 'projects/create.html', {'form': form})
         return redirect('some_success_url')
-
+    
     return render(request, 'projects/create.html', {'form': form})
 
 
@@ -48,3 +45,30 @@ from django.http import JsonResponse
 def tag_list(request):
     tags = Tag.objects.values_list('name', flat=True)
     return JsonResponse(list(tags), safe=False)
+from django.shortcuts import render
+from django.db import models
+
+# Create your views here.
+def index(request):
+    pass
+
+def details(request,project_id):
+    pass
+
+def update_project(request,project_id):
+    pass
+
+def cancel_project(request,project_id):
+    pass
+
+def donate(request,project_id):
+    pass
+
+def add_comment(request,project_id):
+    pass
+
+def report_project(request,project_id):
+    pass
+
+def rate_project(request,project_id):
+    pass
