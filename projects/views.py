@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from .models import Project, Tag, ProjectTag, ProjectImage, Donation, Report, Rating, Comment
 from datetime import date
 from django.db import models
+from django.contrib import messages
 
 def create_project(request):
     form = ProjectForm()
@@ -78,16 +79,6 @@ def project_detail (request, project_id):
         'comments': comments
     })
 
-
-# Create your views here.
-def index(request):
-    pass
-
-def details(request,project_id):
-    pass
-
-def update_project(request,project_id):
-    pass
 def donate(request,project_id):
     project = get_object_or_404(Project,id=project_id)
     if request.method == 'POST':
@@ -101,19 +92,25 @@ def donate(request,project_id):
         
         donation = Donation(amount=amount, project=project, user=User.objects.get(pk=1)) #remeber to adjust this(user)
         donation.save()
+        messages.success(request, 'God bless U, thanks for ur donation!')
         return redirect('projects:details', project_id=project_id)
     return render(request, 'projects/donate.html', {'project': project})
 
 def add_comment(request,project_id):
     pass
 
-def report_project(request,project_id):
-    project = Project.objects.get(id = project_id)
-    if(request.method == 'POST'):
+def report_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    if request.method == 'POST':
         reason = request.POST.get('reason')
         if reason:
-            report = Report(reason=reason, project=project, user=User.objects.get(pk=1)) #remeber to adjust this(user)
+            report = Report(project=project, user=User.objects.get(pk=1), reason=reason) #remeber to adjust this(user)
             report.save()
+            messages.success(request, 'Your report has been submitted.')
+        return redirect('projects:details', project_id=project_id)
+
+    return render(request, 'projects/report_project.html', {'project': project})
 
 
 def rate_project(request,project_id):
