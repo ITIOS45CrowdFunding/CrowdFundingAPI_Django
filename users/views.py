@@ -9,7 +9,9 @@ from django.conf import settings
 from .token import activation_token
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate,login as auth_login
+from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView
 
+from django.urls import reverse_lazy
 
 User = get_user_model()
 # Create your views here.
@@ -40,7 +42,7 @@ def signUp(request):
             subject="Activation Your Account "
             message=f"{user.username} please click to activate Your Account :{activation_link}"
             send_mail(subject,message,settings.DEFAULT_FROM_EMAIL,[user.email])
-            request.session['newuser']=user.username
+            # request.session['newuser']=user.username
             return redirect("users:activateMessage")
     return render(request,'users/signup.html',{'form':form})
 
@@ -67,7 +69,7 @@ def login(request):
         if user is not None:
             if user.is_active:
                 auth_login(request,user)
-                return HttpResponse('login success')
+                return redirect("home:home")
             else:
                 error="Account is not Activated Yet , Please Check Your mail"
         else:
@@ -77,3 +79,25 @@ def login(request):
 def activate_page(request):
     username=request.session.pop('newuser')
     return render(request,'users/activate_email.html',{'username':username})
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset.html'
+    success_url = reverse_lazy('users:password_reset_done')
+    email_template_name = 'registration/password_reset_email.txt'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+    html_email_template_name = 'registration/password_reset_email.html' 
+
+    def form_valid(self, form):
+        # Save email to session
+        self.request.session['reset_email'] = form.cleaned_data.get('email')
+        return super().form_valid(form)
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['email'] = self.request.session.get('reset_email', '')
+        return context
