@@ -1,15 +1,19 @@
 import json
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import ProjectForm
-from .models import Tag, ProjectImage, Project
 from users.models import CustomUser as User
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.http import HttpResponse
 from .models import Project, Tag, ProjectTag, ProjectImage, Donation, Report, Rating, Comment
-from datetime import date
-from django.db import models
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Project, Comment, Rating
+from django.db.models import Avg
 
 def create_project(request):
     form = ProjectForm()
@@ -65,7 +69,7 @@ def project_details (request, project_id):
     reports = Report.objects.filter(project=project)
     ratings = Rating.objects.filter(project=project)
     comments = Comment.objects.filter(project=project)
-    
+    avg_rating = ratings.aggregate(Avg('value'))['value__avg'] or 0
     
 
     # Render a template with the project details
@@ -76,7 +80,8 @@ def project_details (request, project_id):
         'donations': donations,
         'reports': reports,
         'ratings': ratings,
-        'comments': comments
+        'comments': comments,
+        'avg_rating': avg_rating,
     })
 
 def donate(request,project_id):
@@ -167,9 +172,45 @@ def edit_project(request, project_id):
     })
 
 # from django.contrib.auth.decorators import login_required
-# @login_required
+@login_required
 def delete_image(request, image_id):
     image = get_object_or_404(ProjectImage, id=image_id)
     project_id = image.project.id
     image.delete()
     return redirect('projects:edit_project', project_id=project_id)
+
+
+
+@csrf_exempt  # since we're using fetch() manually; optionally use @csrf_protect + ensure CSRF token is passed
+@require_POST
+@login_required
+def add_comment(request, project_id):
+    try:
+        project = get_object_or_404(Project, id=project_id)
+        data = json.loads(request.body)
+
+        # Extract comment text and rating
+        text = data.get('text', '').strip()
+        rating_value = int(data.get('rating', 0))
+
+        if not text:
+            return JsonResponse({'error': 'Comment text is required.'}, status=400)
+
+        # Save comment
+        Comment.objects.create(
+            project=project,
+            user=request.user,
+            text=text
+        )
+
+        # Save or update rating (1 rating per user per project)
+        Rating.objects.update_or_create(
+            project=project,
+            user=request.user,
+            defaults={'value': rating_value}
+        )
+
+        return JsonResponse({'success': True, 'message': 'Comment and rating submitted.'})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

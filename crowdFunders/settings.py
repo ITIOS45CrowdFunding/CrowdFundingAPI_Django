@@ -156,8 +156,8 @@ MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'theme' / 'static_src' / 'src',  # raw tailwind source (optional)
-    BASE_DIR / 'homepage' / 'static', 
+    BASE_DIR / 'theme' / 'static',  
+    # BASE_DIR / 'homepage' / 'static', 
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
