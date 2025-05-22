@@ -104,3 +104,4 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(through='projects.ProjectTag', to='projects.tag'),
         ),
     ]
+    

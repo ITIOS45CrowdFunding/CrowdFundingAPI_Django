@@ -54,7 +54,7 @@ def tag_list(request):
 def base(request):
     return render(request, 'projects/index.html')
 
-def project_detail (request, project_id):
+def project_details (request, project_id):
     # Logic to retrieve project details using project_id
     # For example, you might fetch the project from the database
     project = Project.objects.get(id=project_id)
