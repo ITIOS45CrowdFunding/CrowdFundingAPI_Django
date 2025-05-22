@@ -1,4 +1,4 @@
-{% extends 'users/base.html' %}
+{% extends 'base/base.html' %}
 
 {% block title %}
     SignUp
@@ -42,6 +42,10 @@
                 <div class="mb-5 flex">
                     <label for="image" class="font-semibold text-lg mb-2">Profile Image</label>
                     {{ form.image }}
+                </div>
+                <div class="flex gap-5 ">
+                    <p>Do You Have Account</p>
+                    <a href="{% url "users:login" %}" class="underline text-green-600 hover:text-blue-500">Login</a>
                 </div>
 
                 {% if form.errors or form.non_field_errors %}

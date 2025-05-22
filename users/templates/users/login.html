@@ -1,11 +1,11 @@
-{% extends 'users/base.html' %}
+{% extends 'base/base.html' %}
 
 {% block title %}
    Login
 {% endblock  %}
 
 {% block content %}
-    <div class="flex items-center justify-center ">
+    <div class="flex items-center justify-center h-[80vh]">
         <div class="flex flex-col w-1/2 items-center justify-center bg-gray-100 p-4 rounded-xl shadow-xl">
             <h1 class="font-semibold text-2xl font-mono text-green-700 mb-10">Login</h1>
             
@@ -21,12 +21,22 @@
                     {{ form.password1 }}
                 </div>
               
-                
-                {% if error %}
-                <div class="text-red-600 text-sm"> 
-                        {{ error}}
+                <div class="flex gap-5 ">
+                    <p>Don't have an Account ??</p>
+                    <a href="{% url "users:signup" %}" class="underline text-green-600 hover:text-blue-500">SignUp</a>
                 </div>
-                {% endif %}
+                <div>
+                    <a  class="underline text-green-600 hover:text-blue-500"  href="{% url "users:password_reset" %}">forget Password</a>
+                </div>
+                
+                {% if form.errors or form.non_field_errors %}
+                <div class="text-red-600 text-sm">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
                     
               
 
