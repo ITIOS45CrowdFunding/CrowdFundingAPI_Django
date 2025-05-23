@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404
 from .models import Project, Comment, Rating
 from django.db.models import Avg
 
+@login_required
 def create_project(request):
     form = ProjectForm()
     if request.method == 'POST':
@@ -120,23 +121,25 @@ def report_project(request, project_id):
 
 def rate_project(request,project_id):
     pass
-
+@login_required
 def my_projects(request):
-    user = User.objects.get(id=1)
+    user = User.objects.get(id=request.user.id)
     projects = Project.objects.filter(user=user)
     return render(request, 'projects/my_projects.html', {'projects': projects})
 
+@login_required
 def cancel_project(request,project_id):
-    user = User.objects.get(id=1)
+    user = User.objects.get(id=request.user.id)
     project = Project.objects.get(id=project_id)
     if project.user != user:
-        return render(request, 'projects/my_projects.html')
+        return render(request, 'projects/my_projects.html',{"error":"You don't have permission to cancel this project."})
     else:
         project.isCancelled = True
         project.save()
         return redirect('projects:my_projects')
+@login_required
 def edit_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
+    project = get_object_or_404(Project, id=project_id,user=request.user)
 
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES, instance=project)
@@ -171,10 +174,9 @@ def edit_project(request, project_id):
             'tags_csv': tags_csv
     })
 
-# from django.contrib.auth.decorators import login_required
 @login_required
 def delete_image(request, image_id):
-    image = get_object_or_404(ProjectImage, id=image_id)
+    image = get_object_or_404(ProjectImage, id=image_id, user=request.user)
     project_id = image.project.id
     image.delete()
     return redirect('projects:edit_project', project_id=project_id)
