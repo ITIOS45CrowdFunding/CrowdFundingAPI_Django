@@ -12,7 +12,7 @@
             >Home</a
           >
           <a
-            href={% url "home:projects_list" %}
+            href={% url "projects:projects_list" %}
             class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300"
             >Projects</a
           >
@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="flex items-center">
-        <form id="search-form" method="get" action="{% url 'home:projects_list' %}" autocomplete="off" class="flex me-2 relative z-20">
+        <form id="search-form" method="get" action="{% url 'projects:projects_list' %}" autocomplete="off" class="flex me-2 relative z-20">
           <input type="text" name="search" id="search-input"
                  placeholder="Search projects or tags..."
                  class="px-4 py-2 border rounded w-full border-gray-300 rounded-s-md" />
