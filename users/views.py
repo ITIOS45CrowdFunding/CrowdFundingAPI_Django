@@ -42,7 +42,7 @@ def signUp(request):
             subject="Activation Your Account "
             message=f"{user.username} please click to activate Your Account :{activation_link}"
             send_mail(subject,message,settings.DEFAULT_FROM_EMAIL,[user.email])
-            # request.session['newuser']=user.username
+            request.session['newuser']=user.username
             return redirect("users:activateMessage")
     return render(request,'users/signup.html',{'form':form})
 
@@ -77,7 +77,9 @@ def login(request):
     return render(request,'users/login.html',{'form':form,'error':error})
 
 def activate_page(request):
-    username=request.session.pop('newuser')
+    username=request.session.pop('newuser',None)
+    if not username:
+        return redirect('users:signup')
     return render(request,'users/activate_email.html',{'username':username})
 
 class CustomPasswordResetView(PasswordResetView):
