@@ -1,0 +1,32 @@
+{% extends 'projects/base.html' %}
+{% block title %}Project Reports{% endblock %}
+{% block content %}
+<div class="mx-auto px-4 py-8 w-full">
+    <div class="mb-8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-2">Reports for: {{ project.title }}</h2>
+        <a href="{% url 'projects:reported_projects' %}" class="text-blue-600 hover:underline">&larr; Back to Reported Projects</a>
+    </div>
+    {% if reports %}
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr class="{% cycle 'bg-white' 'bg-gray-50' %}">
+                    <td class="px-4 py-2 text-sm text-gray-900">{{ report.user.username }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-900">{{ report.reason }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-600">No reports found for this project.</p>
+    {% endif %}
+</div>
+{% endblock %}
