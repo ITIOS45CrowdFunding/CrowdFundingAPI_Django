@@ -71,6 +71,7 @@ def project_details (request, project_id):
     ratings = Rating.objects.filter(project=project)
     comments = Comment.objects.filter(project=project)
     avg_rating = ratings.aggregate(Avg('value'))['value__avg'] or 0
+    similar_projects = Project.objects.filter(tags__in=project.tags.all()).exclude(id=project_id).distinct()
     
 
     # Render a template with the project details
@@ -83,6 +84,7 @@ def project_details (request, project_id):
         'ratings': ratings,
         'comments': comments,
         'avg_rating': avg_rating,
+        'similar_projects': similar_projects
     })
 
 def donate(request,project_id):
@@ -101,9 +103,6 @@ def donate(request,project_id):
         messages.success(request, 'God bless U, thanks for ur donation!')
         return redirect('projects:project_details', project_id=project_id)
     return render(request, 'projects/donate.html', {'project': project})
-
-def add_comment(request,project_id):
-    pass
 
 def report_project(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -259,3 +258,14 @@ def add_comment(request, project_id):
         return JsonResponse({'error': 'Invalid JSON data'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+def similar_projects(request, project_id):
+    """Fetch similar projects based on tags"""
+    project = get_object_or_404(Project, id=project_id)
+    similar_projects = Project.objects.filter(tags__in=project.tags.all()).exclude(id=project_id).distinct()
+    
+    return render(request, 'projects/similar_projects.html', {
+        'project': project,
+        'similar_projects': similar_projects
+    })
