@@ -15,8 +15,6 @@
     {% endfor %}
   </div>
 
- 
-
   <!-- Swiper Slider -->
   <div class="swiper mySwiper w-full max-w-4xl mx-auto rounded shadow">
     <div class="swiper-wrapper">
@@ -85,8 +83,7 @@
     {% endif %}
   </div>
 
-  <!-- Comment & Rating Form -->
-  {% if user.is_authenticated %}
+  <!-- Comments Section -->
   <div class="bg-white rounded shadow p-6 mb-6">
     <h4 class="text-xl font-bold mb-4">Comments ({{ comments|length }})</h4>
   
@@ -104,8 +101,42 @@
       <p class="text-gray-500 text-sm">No comments yet.</p>
     {% endif %}
   </div>
-  <div class="bg-gray-100 p-4 rounded mb-6">
-    <h4 class="text-lg font-bold mb-3">Leave a Comment & Rating</h4>
+
+  {% if user.is_authenticated %}
+  <!-- Rating Form -->
+  <div class="bg-yellow-50 border border-yellow-200 p-4 rounded mb-6">
+    <h4 class="text-lg font-bold mb-3 text-yellow-800">Rate This Project</h4>
+    
+    <form id="rating-form" class="space-y-4">
+      {% csrf_token %}
+      
+      <!-- Star Rating -->
+      <div class="flex items-center space-x-4">
+        <span class="text-gray-700 font-medium">Your Rating:</span>
+        <div
+          id="star-rating"
+          class="flex gap-1 text-2xl text-yellow-400 cursor-pointer"
+        >
+          {% for i in "12345" %}
+          <span data-value="{{ forloop.counter }}" class="star">&#9734;</span>
+          {% endfor %}
+        </div>
+      </div>
+      <input type="hidden" name="rating" id="rating-value" value="0" />
+
+      <!-- Submit Rating -->
+      <button
+        type="submit"
+        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded"
+      >
+        Submit Rating
+      </button>
+    </form>
+  </div>
+
+  <!-- Comment Form -->
+  <div class="bg-blue-50 border border-blue-200 p-4 rounded mb-6">
+    <h4 class="text-lg font-bold mb-3 text-blue-800">Leave a Comment</h4>
 
     <form id="comment-form" class="space-y-4">
       {% csrf_token %}
@@ -120,23 +151,12 @@
         placeholder="Write your comment..."
       ></textarea>
 
-      <!-- Star Rating -->
-      <div
-        id="star-rating"
-        class="flex gap-1 text-2xl text-yellow-400 cursor-pointer"
-      >
-        {% for i in "12345" %}
-        <span data-value="{{ forloop.counter }}" class="star">&#9734;</span>
-        {% endfor %}
-      </div>
-      <input type="hidden" name="rating" id="rating-value" value="0" />
-
-      <!-- Submit -->
+      <!-- Submit Comment -->
       <button
         type="submit"
         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
       >
-        Submit
+        Submit Comment
       </button>
     </form>
   </div>
@@ -169,6 +189,7 @@
 {% block scripts %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+  // Initialize Swiper
   const swiper = new Swiper(".mySwiper", {
     loop: true,
     navigation: {
@@ -179,18 +200,23 @@ document.addEventListener("DOMContentLoaded", function () {
       el: ".swiper-pagination",
     },
   });
-  const form = document.getElementById("comment-form");
+
+  // Rating Form Elements
+  const ratingForm = document.getElementById("rating-form");
   const stars = document.querySelectorAll("#star-rating .star");
   const ratingInput = document.getElementById("rating-value");
+  
+  // Comment Form Elements
+  const commentForm = document.getElementById("comment-form");
   const commentText = document.getElementById("comment-text");
 
   let currentRating = 0;
 
-  // Handle star click
+  // Handle star click for rating
   stars.forEach((star) => {
     star.addEventListener("click", function () {
       currentRating = this.dataset.value;
-      console.log(currentRating);
+      console.log("Rating selected:", currentRating);
       ratingInput.value = currentRating;
 
       // Highlight selected stars
@@ -198,43 +224,101 @@ document.addEventListener("DOMContentLoaded", function () {
         s.innerHTML = s.dataset.value <= currentRating ? "★" : "☆";
       });
     });
+
+    // Add hover effect
+    star.addEventListener("mouseenter", function () {
+      const hoverValue = this.dataset.value;
+      stars.forEach((s) => {
+        s.innerHTML = s.dataset.value <= hoverValue ? "★" : "☆";
+      });
+    });
   });
 
-  // AJAX submit
-  form.addEventListener("submit", async function (e) {
+  // Reset stars on mouse leave
+  document.getElementById("star-rating").addEventListener("mouseleave", function () {
+    stars.forEach((s) => {
+      s.innerHTML = s.dataset.value <= currentRating ? "★" : "☆";
+    });
+  });
+
+  // Handle Rating Form Submission
+  ratingForm.addEventListener("submit", async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Submitting comment...");
+    
+    if (currentRating === 0) {
+      alert("Please select a rating before submitting!");
+      return;
+    }
+    
+    console.log("Submitting rating...");
     
     try {
-      const response = await fetch("{% url 'projects:add_comment' project.id %}", {
+      const response = await fetch("{% url 'projects:add_rating' project.id %}", {
         method: "POST",
         headers: {
-          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+          "X-CSRFToken": document.querySelector("#rating-form [name=csrfmiddlewaretoken]").value,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: commentText.value,
-          rating: ratingInput.value,
+          rating: currentRating,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert("Comment submitted!");
-
-        // Reset form
-        commentText.value = "";
-        ratingInput.value = 0;
-        currentRating = 0;
-        stars.forEach((s) => (s.innerHTML = "☆"));
+        alert("Rating submitted successfully!");
+        // Optionally reload the page to show updated ratings
+        // location.reload();
       } else {
-        alert("Something went wrong: " + (data.error || "Unknown error"));
+        alert("Error submitting rating: " + (data.error || "Unknown error"));
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Network error occurred");
+      alert("Network error occurred while submitting rating");
+    }
+  });
+
+  // Handle Comment Form Submission
+  commentForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Submitting comment...");
+    
+    if (!commentText.value.trim()) {
+      alert("Please enter a comment before submitting!");
+      return;
+    }
+    
+    try {
+      const response = await fetch("{% url 'projects:add_comment' project.id %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": document.querySelector("#comment-form [name=csrfmiddlewaretoken]").value,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: commentText.value.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Comment submitted successfully!");
+        
+        // Reset comment form
+        commentText.value = "";
+        
+        // Optionally reload the page to show new comment
+        // location.reload();
+      } else {
+        alert("Error submitting comment: " + (data.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Network error occurred while submitting comment");
     }
   });
 });

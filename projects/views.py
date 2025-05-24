@@ -186,33 +186,76 @@ def delete_image(request, image_id):
 @csrf_exempt  # since we're using fetch() manually; optionally use @csrf_protect + ensure CSRF token is passed
 @require_POST
 @login_required
-def add_comment(request, project_id):
+def add_rating(request, project_id):
+    """Handle rating submission separately"""
     try:
         project = get_object_or_404(Project, id=project_id)
         data = json.loads(request.body)
-
-        # Extract comment text and rating
-        text = data.get('text', '').strip()
+        
         rating_value = int(data.get('rating', 0))
+        
+        if not (1 <= rating_value <= 5):
+            return JsonResponse({'error': 'Rating must be between 1 and 5'}, status=400)
+        
+        # Check if user has already rated this project
+        existing_rating = Rating.objects.filter(
+            project=project, 
+            user=request.user
+        ).first()
+        
+        if existing_rating:
+            # Update existing rating
+            existing_rating.value = rating_value
+            existing_rating.save()
+            message = "Rating updated successfully!"
+        else:
+            # Create new rating
+            Rating.objects.create(
+                project=project,
+                user=request.user,
+                value=rating_value
+            )
+            message = "Rating submitted successfully!"
+        
+        return JsonResponse({'success': True, 'message': message})
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid rating value'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-        if not text:
-            return JsonResponse({'error': 'Comment text is required.'}, status=400)
 
-        # Save comment
+@require_POST
+@login_required
+def add_comment(request, project_id):
+    """Handle comment submission separately"""
+    try:
+        project = get_object_or_404(Project, id=project_id)
+        data = json.loads(request.body)
+        
+        comment_text = data.get('text', '').strip()
+        
+        if not comment_text:
+            return JsonResponse({'error': 'Comment text cannot be empty'}, status=400)
+        
+        if len(comment_text) > 1000:  # Add reasonable limit
+            return JsonResponse({'error': 'Comment is too long (max 1000 characters)'}, status=400)
+        
+        # Create new comment
         Comment.objects.create(
             project=project,
             user=request.user,
-            text=text
+            text=comment_text
         )
-
-        # Save or update rating (1 rating per user per project)
-        Rating.objects.update_or_create(
-            project=project,
-            user=request.user,
-            defaults={'value': rating_value}
-        )
-
-        return JsonResponse({'success': True, 'message': 'Comment and rating submitted.'})
-
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Comment submitted successfully!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
