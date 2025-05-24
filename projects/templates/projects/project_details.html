@@ -1,4 +1,17 @@
-{% extends 'projects/base.html' %} {% block content %}
+{% extends 'projects/base.html' %} 
+{% block head %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+
 {% load static %}
 <div class="max-w-6xl mx-auto px-4 py-8">
   <!-- Project Title -->
