@@ -33,5 +33,9 @@ urlpatterns = [
          ), 
          name='password_reset_complete'),
     path('logout/', LogoutView.as_view(next_page='users:login'), name='logout'),
+    path('profile/',views.view_profile,name="profile"),
+    path('profile/edit',views.edit_profile,name='edit_profile'),
+    path('profile/edit_all/',views.edit_all_profile,name='edit_all_profile'),
+    path('profile/delete',views.delete_profile,name='delete_profile')
          
 ]

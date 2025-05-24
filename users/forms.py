@@ -68,3 +68,38 @@ class LoginForm(forms.Form):
     class Meta:
         Model=User
         fields=['email','password1']
+
+class ProfileForm(forms.ModelForm):
+    facebook_profile=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+        'placeholder':'Enter Your Facebook Account',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    country=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+        'placeholder':'Enter Your Country',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    birthdate=forms.CharField(max_length=14,required=True,widget=forms.DateInput(attrs={
+        'type':'date',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    
+    class Meta:
+        model=Profile
+        fields=['facebook_profile','birthdate','country']
+
+class UserForm(forms.ModelForm):
+    first_name=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+        'placeholder':'Change Your First Name',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    last_name=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+        'placeholder':'Chage Your Last Name',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    username=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+        'placeholder':'Chage Your User Namae',
+        'class':'w-full p-4 rounded-lg bg-white'
+    }))
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name','username']  

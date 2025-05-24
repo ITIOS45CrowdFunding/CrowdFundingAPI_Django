@@ -1,4 +1,5 @@
-<nav class="bg-white shadow-lg relative">
+{% load static %}
+<nav class="bg-white shadow-lg relative p-2">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between h-16">
       <div class="flex">
@@ -33,19 +34,31 @@
           <ul id="autocomplete-list"
               class="absolute bg-white w-full border border-gray-300 rounded-md z-50 shadow-md hidden" style="top: 100%; margin-bottom: 4px; z-index: 50;"></ul>
         </form>
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and user.profile %}
+        <div class="flex items-center space-x-4">
+          <a href="{% url 'users:profile' %}" class="flex items-center space-x-2 group">
+            {% if user.profile.image %}
+            <img src="{{ user.profile.image.url }}" alt="Profile"
+                 class="w-12 h-12 rounded-full object-cover border border-gray-300 group-hover:border-gray-500 transition duration-150" />
+          {% else %}
+            <img src="{% static 'profile.png' %}" alt="Profile"
+                 class="w-12 h-12 rounded-full object-cover border border-gray-300 group-hover:border-gray-500 transition duration-150" />
+          {% endif %}
+          </a>
         <form method="post" action="{% url 'users:logout' %}">
           {% csrf_token %}
           <button type="submit" class="text-gray-900 hover:text-gray-700 px-3 py-2 hover:underline bg-transparent border-0 cursor-pointer">
             Logout
           </button>
+          
+          
         </form>
-        <div class="flex items-center gap-3 ">
+        <!-- <div class="flex items-center gap-3 ">
         <div class="rounded-full w-10 h-10 overflow-hidden shadow ms-4">
           <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="w-full h-full object-cover">
         </div>
         <span class="text-gray-600 font-semibold">Hi, {{ user.first_name }}</span>
-        </div>
+        </div> -->
 
         {% else %}
         <a href={% url "users:login" %} class="text-gray-900 hover:text-gray-700 px-3 py-2">Login</a>

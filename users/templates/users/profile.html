@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
+  <div class="flex items-center space-x-6 border-b pb-6 mb-6">
+    {% if user.profile.image %}
+      <img src="{{ user.profile.image.url }}" alt="Profile" class="w-24 h-24 rounded-full object-cover">
+    {% else %}
+      <img src="{% static 'profile.png' %}" alt="Default Profile" class="w-24 h-24 rounded-full object-cover">
+    {% endif %}
+
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Welcome, {{ user.first_name }}</h2>
+      <p class="text-gray-600">{{ user.email }}</p>
+    </div>
+  </div>
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold text-gray-800">Profile Info</h3>
+  
+    {% if profile.facebook_profile and profile.country and profile.birthdate %}
+    <p><strong>First Name : </strong> {{ user.first_name }}</p>
+    <p><strong>Last Name: </strong> {{ user.last_name }}</p>
+    <p><strong>User Name: </strong> {{ user.username}}</p>
+      <p><strong>Phone: </strong> {{ user.profile.phone }}</p>
+      <p><strong>Birthday: </strong> {{ profile.birthdate }}</p>
+     
+      <p><strong>Facebook: </strong> 
+        <a href="{{ profile.facebook_profile }}" class="text-blue-500 hover:underline" target="_blank">
+          {{ profile.facebook_profile }}
+        </a>
+      </p>
+      <p><strong>Country:</strong> {{ profile.country }}</p>
+    {% else %}
+      <p class="text-red-600">Your profile is incomplete. Please complete your profile information.</p>
+      <a href="{% url 'users:edit_profile' %}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        Complete Profile
+      </a>
+    {% endif %}
+  </div>
+  
+
+  <div class="mt-8">
+    <h3 class="text-lg font-semibold text-gray-800">Your Projects</h3>
+    {% if projects %}
+      <ul class="list-disc list-inside text-gray-700">
+        {% for project in projects %}
+          <li>
+            <strong>{{ project.title }}</strong><br>
+            <span class="text-sm">{{ project.details }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">You have no projects yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="mt-8">
+    <h3 class="text-lg font-semibold text-gray-800">Your Donations</h3>
+    {% if donations %}
+      <ul class="list-disc list-inside text-gray-700">
+        {% for donation in donations %}
+          <li>
+            <strong>{{ donation.title }}</strong><br>
+            <span class="text-sm">{{ donation.details }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">You haven't made any donations yet.</p>
+    {% endif %}
+  </div>
+
+
+  <div class="mt-6 flex space-x-4">
+    <a href="{% url 'users:edit_all_profile' %}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Edit Profile</a>
+    <a href="{% url 'users:delete_profile' %}" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete Profile</a>
+  </div>
+</div>
+{% endblock %}
