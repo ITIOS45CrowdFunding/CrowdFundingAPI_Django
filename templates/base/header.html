@@ -53,12 +53,12 @@
           
           
         </form>
-        <!-- <div class="flex items-center gap-3 ">
+        {% comment %} <!-- <div class="flex items-center gap-3 ">
         <div class="rounded-full w-10 h-10 overflow-hidden shadow ms-4">
           <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="w-full h-full object-cover">
         </div>
         <span class="text-gray-600 font-semibold">Hi, {{ user.first_name }}</span>
-        </div> -->
+        </div> --> {% endcomment %}
 
         {% else %}
         <a href={% url "users:login" %} class="text-gray-900 hover:text-gray-700 px-3 py-2">Login</a>
