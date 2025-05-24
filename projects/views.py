@@ -14,6 +14,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Project, Comment, Rating
 from django.db.models import Avg
+from django.contrib.admin.views.decorators import staff_member_required
+ 
 
 @login_required
 def create_project(request):
@@ -55,7 +57,6 @@ def tag_list(request):
     tags = Tag.objects.values_list('name', flat=True)
     return JsonResponse(list(tags), safe=False)
 
-# Create your views here.
 def base(request):
     return render(request, 'projects/index.html')
 
@@ -85,42 +86,53 @@ def project_details (request, project_id):
         'avg_rating': avg_rating,
     })
 
+@login_required
 def donate(request,project_id):
     project = get_object_or_404(Project,id=project_id)
     if request.method == 'POST':
         amount = request.POST.get('amount')
         try:
             amount = float(amount)
-            if amount <= 0:
+            if amount <= 0 or amount > project.target:
                 raise ValueError
         except (ValueError, TypeError):
             return render(request, 'projects/donate.html', {'project': project, 'error': 'Please enter a valid amount'})
         
-        donation = Donation(amount=amount, project=project, user=User.objects.get(pk=1)) #remeber to adjust this(user)
+        donation = Donation(amount=amount, project=project, user=request.user) 
         donation.save()
+        print(request)
         messages.success(request, 'God bless U, thanks for ur donation!')
         return redirect('projects:project_details', project_id=project_id)
     return render(request, 'projects/donate.html', {'project': project})
 
-def add_comment(request,project_id):
-    pass
-
+@login_required
 def report_project(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
     if request.method == 'POST':
         reason = request.POST.get('reason')
+        already_reported = Report.objects.filter(project=project, user=request.user).exists()
+        if already_reported:
+            messages.warning(request, 'You have already reported this project.')
+            return redirect('projects:project_details', project_id=project_id)
         if reason:
-            report = Report(project=project, user=User.objects.get(pk=1), reason=reason) #remeber to adjust this(user)
+            report = Report(project=project, user=request.user, reason=reason) 
             report.save()
             messages.success(request, 'Your report has been submitted.')
-        return redirect('projects:details', project_id=project_id)
+        return redirect('projects:project_details', project_id=project_id)
 
     return render(request, 'projects/report_project.html', {'project': project})
 
+@staff_member_required
+def reported_projects(request):
+    reported_projects = Project.objects.filter(report__isnull=False).distinct()
+    return render(request, 'projects/reported_projects.html', {'reported_projects': reported_projects})
 
-def rate_project(request,project_id):
-    pass
+@staff_member_required
+def project_reports(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    reports = Report.objects.filter(project=project)
+    return render(request, 'projects/project_reports.html', {'project': project, 'reports': reports})
 @login_required
 def my_projects(request):
     user = User.objects.get(id=request.user.id)
