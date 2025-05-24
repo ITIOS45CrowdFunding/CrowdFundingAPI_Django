@@ -99,7 +99,7 @@ def donate(request,project_id):
         donation = Donation(amount=amount, project=project, user=User.objects.get(pk=1)) #remeber to adjust this(user)
         donation.save()
         messages.success(request, 'God bless U, thanks for ur donation!')
-        return redirect('projects:details', project_id=project_id)
+        return redirect('projects:project_details', project_id=project_id)
     return render(request, 'projects/donate.html', {'project': project})
 
 def add_comment(request,project_id):
