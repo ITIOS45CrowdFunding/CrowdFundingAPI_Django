@@ -21,8 +21,12 @@
     <h3 class="text-lg font-semibold text-gray-800">Profile Info</h3>
   
     {% if profile.facebook_profile and profile.country and profile.birthdate %}
+    <p><strong>First Name : </strong> {{ user.first_name }}</p>
+    <p><strong>Last Name: </strong> {{ user.last_name }}</p>
+    <p><strong>User Name: </strong> {{ user.username}}</p>
       <p><strong>Phone: </strong> {{ user.profile.phone }}</p>
       <p><strong>Birthday: </strong> {{ profile.birthdate }}</p>
+     
       <p><strong>Facebook: </strong> 
         <a href="{{ profile.facebook_profile }}" class="text-blue-500 hover:underline" target="_blank">
           {{ profile.facebook_profile }}
@@ -70,8 +74,9 @@
     {% endif %}
   </div>
 
+
   <div class="mt-6 flex space-x-4">
-    <a href="{% url 'users:edit_profile' %}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Edit Profile</a>
+    <a href="{% url 'users:edit_all_profile' %}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Edit Profile</a>
     <a href="{% url 'users:delete_profile' %}" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete Profile</a>
   </div>
 </div>

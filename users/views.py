@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
-from .forms import SignUpForm, LoginForm, ProfileForm
+from .forms import SignUpForm, LoginForm, ProfileForm, UserForm
 from .models import Profile
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
@@ -44,10 +44,10 @@ def signUp(request):
                 reverse("users:activate", kwargs={"uidb64": uid, "token": token})
             )
 
-            subject="Activation Your Account "
-            message=f"{user.username} please click to activate Your Account :{activation_link}"
-            send_mail(subject,message,settings.DEFAULT_FROM_EMAIL,[user.email])
-            request.session['newuser']=user.username
+            subject = "Activation Your Account "
+            message = f"{user.username} please click to activate Your Account :{activation_link}"
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+            request.session["newuser"] = user.username
 
             return redirect("users:activateMessage")
     return render(request, "users/signup.html", {"form": form})
@@ -97,6 +97,7 @@ def view_profile(request):
     # projects=Project.objects.filter(user=request.user)
     projects = [{"title": "new project", "details": "a new project added successfully"}]
     # donations=Donation.objects.filter(user=request.user)
+
     donations = [
         {"title": "new donation", "details": "a new donation added successfully"}
     ]
@@ -122,10 +123,33 @@ def edit_profile(request):
     return render(request, "users/edit_profile.html", {"form": form})
 
 
+def edit_all_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    profile_form = ProfileForm()
+    user_form=UserForm()
+    user=request.user
+    if request.method == "POST":
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        user_form = UserForm(request.POST, instance=request.user)
+        if profile_form.is_valid() and user_form.is_valid():
+            profile_form.save()
+            user_form.save()
+            messages.success(request, "Profile updated successfully")
+            return redirect("users:profile")
+    else:
+        profile_form = ProfileForm(instance=profile)
+        user_form = UserForm(instance=user)
+    return render(
+        request,
+        "users/edit_all_profile.html",
+        {"profile_form": profile_form, "user_form": user_form,'profile':profile},
+    )
+
+
 @login_required
 def delete_profile(request):
     profile = get_object_or_404(Profile, user=request.user)
-    user=request.user
+    user = request.user
     if request.method == "POST":
         if request.POST.get("confirm") == "yes":
             profile.delete()
