@@ -8,6 +8,7 @@ from django.contrib.auth.views import LogoutView
 
 app_name='users'
 urlpatterns = [
+    path('my-donations/',views.donation_list,name='donation_list'),
     path('signup/',views.signUp,name='signup'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('activate_email/',views.activate_page,name="activateMessage"),

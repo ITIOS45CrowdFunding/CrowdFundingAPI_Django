@@ -1,0 +1,159 @@
+{% extends 'base/base.html' %} 
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">My Donations</h1>
+        <p class="text-gray-600">Track your contribution history and impact</p>
+    </div>
+
+    {% if donations %}
+        <!-- Donation Statistics -->
+        <!-- Donation Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Total Donated -->
+    <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-lg p-6 text-white">
+        <div class="flex items-center">
+            <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+            <div>
+                <p class="text-green-100 text-sm font-medium">Total Donated</p>
+                <p class="text-2xl font-bold">
+                    USD {{ total_donated }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Supported -->
+    <div class="bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg p-6 text-white">
+        <div class="flex items-center">
+            <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            <div>
+                <p class="text-blue-100 text-sm font-medium">Projects Supported</p>
+                <p class="text-2xl font-bold">{{ donations|length }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Made -->
+    <div class="bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg p-6 text-white shadow-lg">
+        <div class="flex items-center">
+            <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+            <div>
+                <p class="text-purple-100 text-sm font-medium">Impact Made</p>
+                <p class="text-2xl font-bold tracking-wide">{{ donations|length }} Lives Touched</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Donations List -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Donation History</h2>
+            </div>
+            
+            <div class="divide-y divide-gray-200">
+                {% for donation in donations %}
+                    {% if donation.project %}
+                        <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-4">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-800 mb-1">
+                                                {{ donation.project.title }}
+                                            </h3>
+                                            <p class="text-sm text-gray-500">
+                                                Donated on {{ donation.date|date:"F j, Y" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if donation.project.description %}
+                                        <p class="text-gray-600 text-sm ml-16 mb-3">
+                                            {{ donation.project.description|truncatewords:20 }}
+                                        </p>
+                                    {% endif %}
+                                    
+                                    <div class="ml-16 flex items-center space-x-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Completed
+                                        </span>
+                                        
+                                        {% if donation.project.category %}
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                                {{ donation.project.category }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="text-right ml-6">
+                                    <div class="text-2xl font-bold text-green-600 mb-1">
+                                        USD {{ donation.amount }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ donation.date|timesince }} ago
+                                    </div>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="mt-3 flex space-x-2">
+                                        <a href="{% url 'projects:project_details' donation.project.id %}" 
+                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            View Project
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        
+       
+        
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">No Donations Yet</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                You haven't made any donations yet. Start supporting projects and make a difference in your community.
+            </p>
+            <a href="{% url 'projects:project_list' %}" 
+               class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                Explore Projects
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

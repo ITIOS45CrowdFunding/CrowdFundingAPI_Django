@@ -284,3 +284,4 @@ def similar_projects(request, project_id):
         'project': project,
         'similar_projects': similar_projects
     })
+

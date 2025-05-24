@@ -180,3 +180,16 @@ class CustomPasswordResetDoneView(PasswordResetDoneView):
         context = super().get_context_data(**kwargs)
         context["email"] = self.request.session.get("reset_email", "")
         return context
+
+@login_required
+def donation_list(request):
+    """List all donations made by the user"""
+    user = request.user
+    donations = Donation.objects.filter(user=user).select_related('project')
+    total_donated = sum(donation.amount for donation in donations)
+
+    return render(request, 'users/donation_list.html', {
+        'donations': donations,
+    "total_donated": total_donated,
+        
+    })
