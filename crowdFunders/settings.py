@@ -192,3 +192,9 @@ AUTHENTICATION_BACKENDS = [
     'users.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+
+LOGIN_URL = '/users/login'
+LOGIN_REDIRECT_URL = '/users/my-projects'
+LOGOUT_REDIRECT_URL = '/'
+

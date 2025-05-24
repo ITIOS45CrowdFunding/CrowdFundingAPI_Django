@@ -37,7 +37,11 @@
                     {{ form.non_field_errors }}
                 </div>
             {% endif %}
-                    
+            {% if error %}
+            <div class="text-red-600 text-sm">
+                {{ error }}
+            </div>
+            {% endif %}
               
 
                 <button type="submit" class="mt-5 bg-green-700 cursor-pointer px-8 py-2 text-white font-semibold hover:opacity-[0.7] rounded-xl">Login</button>

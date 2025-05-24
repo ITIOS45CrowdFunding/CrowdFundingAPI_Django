@@ -43,10 +43,12 @@ def signUp(request):
             activation_link = request.build_absolute_uri(
                 reverse("users:activate", kwargs={"uidb64": uid, "token": token})
             )
-            subject = "Activation Your Account "
-            message = f"{user.username} please click to activate Your Account :{activation_link}"
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-            request.session["newuser"] = user.username
+
+            subject="Activation Your Account "
+            message=f"{user.username} please click to activate Your Account :{activation_link}"
+            send_mail(subject,message,settings.DEFAULT_FROM_EMAIL,[user.email])
+            request.session['newuser']=user.username
+
             return redirect("users:activateMessage")
     return render(request, "users/signup.html", {"form": form})
 
@@ -84,6 +86,7 @@ def login(request):
 
 
 def activate_page(request):
+
     username = request.session.pop("newuser")
     return render(request, "users/activate_email.html", {"username": username})
 
