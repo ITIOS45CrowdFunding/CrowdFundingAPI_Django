@@ -24,7 +24,7 @@ def create_project(request):
         form = ProjectForm(request.POST)
         if form.is_valid():
             project = form.save(commit=False)
-            project.user = User.objects.get(pk=1)
+            project.user = User.objects.get(pk=request.user.id)
             project.save()
 
             try:
@@ -178,7 +178,7 @@ def edit_project(request, project_id):
     else:
         form = ProjectForm(instance=project)
         images = project.projectimage_set.all()
-        tags_csv = ",".join(project.tags.values_list('name', flat=True))  
+        tags_csv = ",".join(project.tags.values_list('name', flat=True))
         return render(request, 'projects/edit.html', {
             'form': form,
             'project': project,
@@ -188,7 +188,7 @@ def edit_project(request, project_id):
 
 @login_required
 def delete_image(request, image_id):
-    image = get_object_or_404(ProjectImage, id=image_id, user=request.user)
+    image = get_object_or_404(ProjectImage, id=image_id, project__user=request.user)
     project_id = image.project.id
     image.delete()
     return redirect('projects:edit_project', project_id=project_id)
