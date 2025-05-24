@@ -12,10 +12,10 @@ urlpatterns = [
     path('project/<int:project_id>/add-rating/', views.add_rating, name='add_rating'),
     path('project/<int:project_id>/add-comment/', views.add_comment, name='add_comment'),
     path('<int:project_id>/report', views.report_project, name='report_project'),
-    # path('<int:project_id>/rate', views.rate_project, name='rate_project'),
     path('tag-list/',views.tag_list,name='tagList'),
     path('my-projects/',views.my_projects,name='my_projects'),
     path('<int:project_id>/edit',views.edit_project,name='edit_project'),
-    path('projects/image/<int:image_id>/delete/', views.delete_image, name='delete_image')
-
+    path('projects/image/<int:image_id>/delete/', views.delete_image, name='delete_image'),
+    path('reported-projects/', views.reported_projects, name='reported_projects'),
+    path('project-reports/<int:project_id>/', views.project_reports, name='project_reports'),
 ]

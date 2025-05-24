@@ -1,0 +1,53 @@
+{% extends 'projects/base.html' %}
+{% block title %}Reported Projects{% endblock %}
+{% block content %}
+<div class="mx-auto px-4 py-8 w-full ">
+    <div class="flex justify-between items-center mb-8">
+        <p class="text-3xl font-semibold text-gray-800">Reported Projects</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for project in reported_projects %}
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+            <img
+                src="{{ project.projectimage_set.first.image.url }}"
+                alt="{{ project.title }}"
+                class="h-48 w-full object-cover"
+                onerror="this.src='https://t4.ftcdn.net/jpg/06/57/37/01/360_F_657370150_pdNeG5pjI976ZasVbKN9VqH1rfoykdYU.jpg'; this.onerror=null;"
+            />
+
+            <div class="p-5 flex flex-col gap-3 flex-grow">
+                <h3 class="text-xl font-bold text-gray-800">{{ project.title }}</h3>
+                <p class="text-gray-600 text-sm">{{ project.details|truncatechars:50 }}</p>
+                <p><strong>Reports:</strong> {{ project.report_count }}</p>
+                {% if project.isCancelled %}
+                    <p class="text-red-500 font-medium">Cancelled</p>
+                {% endif %}
+                <div class="mt-auto pt-4 flex justify-between gap-2">
+                    <a
+                        href="{% url 'projects:project_reports' project.id %}"
+                        class="text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-sm"
+                    >
+                        View Reports
+                    </a>
+                    {% if not project.isCancelled %}
+                    <form method="POST" action="{% url 'projects:cancel_project' project.id %}">
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="text-white bg-gray-700 hover:bg-gray-900 px-4 py-2 rounded-xl text-sm"
+                            onclick="return confirm('Are you sure you want to cancel this project?');"
+                        >
+                            Cancel
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-600">No reported projects found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
