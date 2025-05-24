@@ -114,7 +114,7 @@ def report_project(request, project_id):
             report = Report(project=project, user=User.objects.get(pk=1), reason=reason) #remeber to adjust this(user)
             report.save()
             messages.success(request, 'Your report has been submitted.')
-        return redirect('projects:details', project_id=project_id)
+        return redirect('projects:project_details', project_id=project_id)
 
     return render(request, 'projects/report_project.html', {'project': project})
 

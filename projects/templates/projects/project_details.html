@@ -170,19 +170,90 @@
   </div>
   {% endif %}
 
-  <!-- Reports (visible to admin only maybe) -->
-  <div class="bg-red-50 p-4 rounded border border-red-200">
-    <h4 class="font-semibold text-red-700 mb-1">Reports</h4>
-    <p class="text-red-900">{{ reports|length }} report(s) submitted.</p>
-  </div>
-</div>
-<div>
-  <a
-    href="{% url 'projects:report_project' project.id %}"
-    class="inline-block mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-  >
-    Report Project
-  </a>
+  <!-- Report Section -->
+  {% comment %} <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h4 class="text-lg font-semibold text-red-700 mb-2">Project Reports</h4>
+        <p class="text-red-600 text-sm">
+          {{ reports|length }} report{{ reports|length|pluralize }} submitted for this project.
+        </p>
+      </div>
+      <div>
+        <a
+          href="{% url 'projects:report_project' project.id %}"
+          class="inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium text-sm rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          Report Project
+        </a>
+      </div>
+    </div>
+  </div> {% endcomment %}
+  <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      
+      <div>
+        <a
+          href="{% url 'projects:report_project' project.id %}"
+          class="inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium text-sm rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          Report Project
+        </a>
+      </div>
+    </div>
+
+    <!-- Reports List -->
+     {%if user.is_superuser%}
+        {% if reports %}
+        
+          <div class="border-t border-red-200 pt-4">
+            <div>
+              <h4 class="text-lg font-semibold text-red-700 mb-2">Project Reports</h4>
+              <p class="text-red-600 text-sm">
+                {{ reports|length }} report{{ reports|length|pluralize }} submitted for this project.
+              </p>
+            </div>
+            <h5 class="text-md font-medium text-red-700 mb-3">Recent Reports:</h5>
+            <div class="space-y-3 max-h-64 overflow-y-auto">
+              {% for report in reports %}
+                <div class="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-2 mb-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          Reported by {{ report.user.username|default:"Anonymous"  }}
+                        </span>
+                        
+                      </div>
+                      
+                    
+                      
+                      <div class="flex items-center mt-2 text-xs text-gray-500">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>{{ report.reason|default:"General Report" }}</span>
+                      </div>
+                    </div>
+                    
+                  
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <div class="border-t border-red-200 pt-4">
+            <p class="text-red-600 text-sm italic">No reports have been submitted for this project yet.</p>
+          </div>
+        {% endif %}
+    {% endif %}
 </div>
 {% endblock %} 
 
@@ -312,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function () {
         commentText.value = "";
         
         // Optionally reload the page to show new comment
-        // location.reload();
+         location.reload();
       } else {
         alert("Error submitting comment: " + (data.error || "Unknown error"));
       }
