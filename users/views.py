@@ -45,7 +45,7 @@ def signUp(request):
             )
 
             subject = "Activation Your Account "
-            message = f"{user.username} please click to activate Your Account :{activation_link}"
+            message = f"{user.username} please click to activate Your Account : {activation_link}"
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
             request.session["newuser"] = user.username
 
