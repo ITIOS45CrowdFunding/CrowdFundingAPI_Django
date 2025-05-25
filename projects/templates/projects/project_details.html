@@ -445,15 +445,60 @@
             const commentsSection = document.getElementById("comment-section");
             commentsSection.innerHTML = "";
             commentsSection.innerHTML = `<h4 class="text-xl font-bold mb-4">Comments (${commentsData.length})</h4>`;
-            commentsData.comments.forEach(comment => {
-              const commentDiv = document.createElement("div");
-              commentDiv.className = "border-b border-gray-200 pb-3 mb-3";
-              commentDiv.innerHTML = `
-            <p class="font-semibold text-gray-800">${comment.user}</p>
-            <p class="text-gray-700 text-sm">${comment.text}</p>
-          `;
-              commentsSection.appendChild(commentDiv);
-            });
+            if (commentsData.comments && commentsData.comments.length > 0) {
+              commentsData.comments.forEach(comment => {
+                const commentDiv = document.createElement("div");
+                commentDiv.className = "border-b border-gray-200 pb-3 mb-3 flex justify-between items-center";
+    
+                // Build comment HTML structure
+                let commentHTML = `
+                  <div>
+                    <p class="font-semibold text-gray-800">${comment.user}</p>
+                    <p class="text-gray-700 text-sm">${comment.text}</p>
+                  </div>
+                  <div class="flex gap-2">
+                `;
+    
+                // Report button: visible to authenticated users, not the comment owner, and not reported
+                if (commentsData.is_authenticated && !comment.is_user && !comment.is_reported) {
+                  commentHTML += `
+                    <form method="POST" action="/projects/report-comment/${comment.id}>
+                      <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector("#comment-form [name=csrfmiddlewaretoken]").value}">
+                      <button type="submit"
+                        class="border border-red-400 text-red-600 px-2 py-1 rounded hover:bg-red-50 hover:border-red-600 hover:text-red-800 text-xs transition">
+                        Report
+                      </button>
+                    </form>
+                  `;
+                } else if (comment.is_reported) {
+                  commentHTML += `
+                    <span class="border border-red-200 text-red-400 px-2 py-1 rounded text-xs bg-red-50">Reported</span>
+                  `;
+                }
+    
+                // Delete button: visible to comment owner or staff
+                if (commentsData.is_user || commentsData.is_staff) {
+                  commentHTML += `
+                    <form method="POST" action="/projects/delete-comment/${comment.id}">
+                      <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector("#comment-form [name=csrfmiddlewaretoken]").value}">
+                      <button type="submit"
+                        class="border border-gray-400 text-gray-600 px-2 py-1 rounded hover:bg-gray-100 hover:border-red-600 hover:text-red-700 text-xs transition">
+                        Delete
+                      </button>
+                    </form>
+                  `;
+                }
+    
+                commentHTML += `</div>`;
+                commentDiv.innerHTML = commentHTML;
+                commentsSection.appendChild(commentDiv);
+              });
+            } else {
+              const noCommentsP = document.createElement("p");
+              noCommentsP.className = "text-gray-500 text-sm";
+              noCommentsP.textContent = "No comments yet.";
+              commentsSection.appendChild(noCommentsP);
+            }
             commentText.value = "";
 
           } else {

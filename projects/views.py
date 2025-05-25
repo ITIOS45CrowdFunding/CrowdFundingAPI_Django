@@ -230,7 +230,8 @@ def add_comment(request, project_id):
         comment = Comment.objects.create(
             project=project,
             user=request.user,
-            text=comment_text
+            text=comment_text,
+            is_reported=False  # Default to not reported
         )
         
         # Return success response with comment data
@@ -241,6 +242,7 @@ def add_comment(request, project_id):
                 'id': comment.id,
                 'text': comment.text,
                 'user': comment.user.username,
+                'is_reported': comment.is_reported,
             }
         })
         
@@ -386,12 +388,16 @@ def get_comments(request, project_id):
                 'id': comment.id,
                 'text': comment.text,
                 'user': comment.user.username,
+                'is_reported': comment.is_reported,
             })
         
         return JsonResponse({
             'success': True,
             'total_comments': comments.count(),
-            'comments': comments_data
+            'comments': comments_data,
+            'is_user': comment.user == request.user,
+            'is_staff': request.user.is_staff, 
+            'is_authenticated': request.user.is_authenticated
         })
         
     except Exception as e:
