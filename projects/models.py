@@ -93,6 +93,6 @@ class Rating(models.Model):
 
 class Comment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
+    is_reported = models.BooleanField(default=False)
