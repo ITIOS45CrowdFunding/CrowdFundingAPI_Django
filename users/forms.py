@@ -70,11 +70,11 @@ class LoginForm(forms.Form):
         fields=['email','password1']
 
 class ProfileForm(forms.ModelForm):
-    facebook_profile=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+    facebook_profile=forms.CharField(required=True,widget=forms.TextInput(attrs={
         'placeholder':'Enter Your Facebook Account',
         'class':'w-full p-4 rounded-lg bg-white'
     }))
-    country=forms.CharField(max_length=14,required=True,widget=forms.TextInput(attrs={
+    country=forms.CharField(max_length=28,required=True,widget=forms.TextInput(attrs={
         'placeholder':'Enter Your Country',
         'class':'w-full p-4 rounded-lg bg-white'
     }))
