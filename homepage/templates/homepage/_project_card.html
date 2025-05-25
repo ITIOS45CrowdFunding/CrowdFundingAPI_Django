@@ -1,6 +1,6 @@
 {% load static %}
 <div
-  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300 flex flex-col h-full"
 >
   <div class="relative h-48 overflow-hidden">
     {% with project.projectimage_set.first as image %}
@@ -10,8 +10,8 @@
         class="w-full h-full object-cover"
         alt="{{ project.title }}"
       />
-      </a>
-      {% endwith %}
+    </a>
+    {% endwith %}
 
     <div class="absolute bottom-0 left-0 right-0 bg-gray-200 h-2">
       <div
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <div class="p-5">
+  <div class="p-5 flex-grow flex flex-col justify-center">
     <div class="mb-2">
       <span
         class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-1"
@@ -32,10 +32,11 @@
         {{ project.title }}
       </h3>
     </div>
-
-    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
-      {{ project.details|truncatechars:100 }}
-    </p>
+    <div class="flex-grow flex items-center">
+      <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+        {{ project.details|truncatechars:100 }}
+      </p>
+    </div>
 
     <div class="flex justify-between items-center text-sm">
       <div class="text-gray-700">
@@ -48,7 +49,8 @@
     </div>
 
     <a
-      href="{% url 'projects:donate' project.id %}" class="mt-4 block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-medium py-2 px-4 rounded-lg transition duration-200"
+      href="{% url 'projects:donate' project.id %}"
+      class="mt-4 block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-medium py-2 px-4 rounded-lg transition duration-200"
     >
       Donate Now
     </a>
