@@ -443,17 +443,12 @@ document.addEventListener("DOMContentLoaded", function () {
           const commentDiv = document.createElement("div");
           commentDiv.className = "border-b border-gray-200 pb-3 mb-3";
           commentDiv.innerHTML = `
-            <p class="font-semibold text-gray-800">${comment.user.username}</p>
+            <p class="font-semibold text-gray-800">${comment.user}</p>
             <p class="text-gray-700 text-sm">${comment.text}</p>
           `;
           commentsSection.appendChild(commentDiv);
         });
         commentText.value = "";
-        
-       
-        
-        
-          
     
       } else {
         alert("Error submitting comment: " + (data.error || "Unknown error"));
