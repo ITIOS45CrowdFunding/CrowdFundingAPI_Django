@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404
 from .models import Project, Comment, Rating
 from django.db.models import Avg
 from django.contrib.admin.views.decorators import staff_member_required
+
  
 
 @login_required
@@ -434,3 +435,17 @@ def delete_comment(request, comment_id):
         messages.success(request, 'Comment deleted successfully.')
         return redirect('projects:project_details', project_id=comment.project.id)
     return redirect('projects:project_details', project_id=comment.project.id)
+
+@login_required
+def delete_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.user == project.user or request.user.is_staff:
+        if request.method == 'POST':
+            project.delete()
+            messages.success(request, 'Project deleted successfully.')
+            return redirect('projects:projects_list')
+        return redirect('projects:projects_list')
+    else:
+        messages.error(request, "You don't have permission to delete this project.")
+        return redirect('projects:project_details', project_id=project_id)
+
