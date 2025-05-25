@@ -65,7 +65,7 @@
   </div>
 
   <!-- Ratings Section -->
-  <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+  <div id="ratings-section" class="bg-white shadow-md rounded-lg p-6 mb-6">
     <h2 class="text-2xl font-bold text-gray-800 mb-4">Project Ratings</h2>
     <div class="mb-4">
       <span class="text-lg font-semibold text-gray-700">Average Rating:</span>
@@ -97,7 +97,7 @@
   </div>
 
   <!-- Comments Section -->
-  <div class="bg-white rounded shadow p-6 mb-6">
+  <div id="comment-section" class="bg-white rounded shadow p-6 mb-6">
     <h4 class="text-xl font-bold mb-4">Comments ({{ comments|length }})</h4>
   
     {% if comments %}
@@ -105,9 +105,7 @@
       <div class="border-b border-gray-200 pb-3 mb-3">
         <p class="font-semibold text-gray-800">{{ comment.user.username }}</p>
         <p class="text-gray-700 text-sm">{{ comment.text }}</p>
-        {% if comment.created_at %}
-          <p class="text-xs text-gray-400">{{ comment.created_at|date:"F j, Y, g:i a" }}</p>
-        {% endif %}
+        
       </div>
       {% endfor %}
     {% else %}
@@ -183,28 +181,7 @@
   </div>
   {% endif %}
 
-  <!-- Report Section -->
-  {% comment %} <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h4 class="text-lg font-semibold text-red-700 mb-2">Project Reports</h4>
-        <p class="text-red-600 text-sm">
-          {{ reports|length }} report{{ reports|length|pluralize }} submitted for this project.
-        </p>
-      </div>
-      <div>
-        <a
-          href="{% url 'projects:report_project' project.id %}"
-          class="inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium text-sm rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-          Report Project
-        </a>
-      </div>
-    </div>
-  </div> {% endcomment %}
+  
   <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
     <div class="flex items-center justify-between mb-4">
       
@@ -358,8 +335,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (response.ok) {
         alert("Rating submitted successfully!");
-        // Optionally reload the page to show updated ratings
-        // location.reload();
+      
+        
+        const updatedRatings = await fetch("{% url 'projects:get_ratings' project.id %}", {
+          method: "GET",
+    
+        });
+        const ratingsData = await updatedRatings.json();
+        console.log("Updated Ratings:", ratingsData);
+        console.log( ratingsData.average_rating);
+        // Optionally, you can update the ratings section here as well
+        let ratingsSection = document.getElementById("ratings-section");
+        console.log("Ratings Section:", ratingsSection);
+        if (!ratingsSection) {
+          ratingsSection = document.createElement("div");
+          ratingsSection.id = "ratings-section";
+          ratingsSection.className = "bg-white shadow-md rounded-lg p-6 mb-6";
+          document.querySelector(".max-w-6xl.mx-auto.px-4.py-8").appendChild(ratingsSection);
+        }
+        
+        ratingsSection.innerHTML = ""; // Clear previous content
+      
+        // Header and average rating block
+        let content = `
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Project Ratings</h2>
+          <div class="mb-4">
+            <span class="text-lg font-semibold text-gray-700">Average Rating:</span>
+            ${
+              ratingsData.average_rating !== null
+                ? `<span class="text-yellow-500 font-bold">${ratingsData.average_rating.toFixed(1)} / 5</span>
+                   <span class="text-gray-500">(${ratingsData.total_ratings} rating${ratingsData.total_ratings !== 1 ? 's' : ''})</span>`
+                : `<span class="text-gray-500 italic">No ratings yet.</span>`
+            }
+          </div>
+        `;
+      
+        // Ratings list
+        if (ratingsData.ratings && ratingsData.ratings.length > 0) {
+          content += `<ul class="space-y-3">`;
+          ratingsData.ratings.forEach(rating => {
+            content += `
+              <li class="border-b border-gray-200 pb-2">
+                <span class="font-medium text-gray-800">${rating.username}</span> rated
+                <span class="text-yellow-500 font-semibold">${rating.value}/5</span>
+                ${rating.is_user ? '<span class="text-sm text-blue-500">(Your rating)</span>' : ''}
+              </li>
+            `;
+          });
+          content += `</ul>`;
+        } else {
+          content += `<p class="text-gray-500 italic">No ratings have been submitted for this project yet.</p>`;
+        }
+      
+        // Set final HTML
+        ratingsSection.innerHTML = content;
+        
       } else {
         alert("Error submitting rating: " + (data.error || "Unknown error"));
       }
@@ -395,13 +425,36 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Comment submitted successfully!");
-        
-        // Reset comment form
+        //alert("Comment submitted successfully!");
+        const response = await fetch("{% url 'projects:get_comments' project.id %}", {
+          method: "GET",
+          headers: {
+            "X-CSRFToken": document.querySelector("#comment-form [name=csrfmiddlewaretoken]").value,
+            "Content-Type": "application/json",
+          }
+        });
+        const commentsData = await response.json();
+       
+        console.log("Updated Comments:", commentsData);
+        const commentsSection = document.getElementById("comment-section");
+        commentsSection.innerHTML = "";
+        commentsSection.innerHTML = `<h4 class="text-xl font-bold mb-4">Comments (${commentsData.length})</h4>`;
+        commentsData.comments.forEach(comment => {
+          const commentDiv = document.createElement("div");
+          commentDiv.className = "border-b border-gray-200 pb-3 mb-3";
+          commentDiv.innerHTML = `
+            <p class="font-semibold text-gray-800">${comment.user.username}</p>
+            <p class="text-gray-700 text-sm">${comment.text}</p>
+          `;
+          commentsSection.appendChild(commentDiv);
+        });
         commentText.value = "";
         
-        // Optionally reload the page to show new comment
-         location.reload();
+       
+        
+        
+          
+    
       } else {
         alert("Error submitting comment: " + (data.error || "Unknown error"));
       }

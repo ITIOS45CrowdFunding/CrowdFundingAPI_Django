@@ -197,84 +197,210 @@ def delete_image(request, image_id):
 
 
 
-@csrf_exempt  # since we're using fetch() manually; optionally use @csrf_protect + ensure CSRF token is passed
-@require_POST
-@login_required
-def add_rating(request, project_id):
-    """Handle rating submission separately"""
-    try:
-        project = get_object_or_404(Project, id=project_id)
-        data = json.loads(request.body)
-        
-        rating_value = int(data.get('rating', 0))
-        
-        if not (1 <= rating_value <= 5):
-            return JsonResponse({'error': 'Rating must be between 1 and 5'}, status=400)
-        
-        # Check if user has already rated this project
-        existing_rating = Rating.objects.filter(
-            project=project, 
-            user=request.user
-        ).first()
-        
-        if existing_rating:
-            # Update existing rating
-            existing_rating.value = rating_value
-            existing_rating.save()
-            message = "Rating updated successfully!"
-        else:
-            # Create new rating
-            Rating.objects.create(
-                project=project,
-                user=request.user,
-                value=rating_value
-            )
-            message = "Rating submitted successfully!"
-        
-        return JsonResponse({'success': True, 'message': message})
-        
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    except ValueError:
-        return JsonResponse({'error': 'Invalid rating value'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
+@csrf_exempt 
 @require_POST
 @login_required
 def add_comment(request, project_id):
-    """Handle comment submission separately"""
+    """
+    Add a new comment to a project via AJAX
+    """
     try:
+        # Get the project
         project = get_object_or_404(Project, id=project_id)
-        data = json.loads(request.body)
         
+        # Parse JSON data
+        data = json.loads(request.body)
         comment_text = data.get('text', '').strip()
         
+        # Validate comment text
         if not comment_text:
-            return JsonResponse({'error': 'Comment text cannot be empty'}, status=400)
+            return JsonResponse({
+                'success': False,
+                'error': 'Comment text cannot be empty'
+            }, status=400)
         
-        if len(comment_text) > 1000:  # Add reasonable limit
-            return JsonResponse({'error': 'Comment is too long (max 1000 characters)'}, status=400)
+        if len(comment_text) > 1000:  # Adjust max length as needed
+            return JsonResponse({
+                'success': False,
+                'error': 'Comment is too long (maximum 1000 characters)'
+            }, status=400)
         
-        # Create new comment
-        Comment.objects.create(
+       
+        # Create the comment
+        comment = Comment.objects.create(
             project=project,
             user=request.user,
             text=comment_text
         )
         
+        # Return success response with comment data
         return JsonResponse({
-            'success': True, 
-            'message': 'Comment submitted successfully!'
+            'success': True,
+            'message': 'Comment added successfully',
+            'comment': {
+                'id': comment.id,
+                'text': comment.text,
+                'user': comment.user.username,
+            }
         })
         
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON data'
+        }, status=400)
     
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred: {str(e)}'
+        }, status=500)
 
+
+@login_required
+def add_rating(request, project_id):
+    """
+    Add or update a rating for a project via AJAX
+    """
+    try:
+        # Get the project
+        project = get_object_or_404(Project, id=project_id)
+        
+        # Parse JSON data
+        data = json.loads(request.body)
+        rating_value = data.get('rating')
+        
+        # Validate rating value
+        try:
+            rating_value = int(rating_value)
+        except (ValueError, TypeError):
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid rating value'
+            }, status=400)
+        
+        if rating_value < 1 or rating_value > 5:
+            return JsonResponse({
+                'success': False,
+                'error': 'Rating must be between 1 and 5'
+            }, status=400)
+        
+        # Check if user is trying to rate their own project
+        if project.user == request.user:
+            return JsonResponse({
+                'success': False,
+                'error': 'You cannot rate your own project'
+            }, status=400)
+        
+        # Create or update the rating
+        rating, created = Rating.objects.update_or_create(
+            project=project,
+            user=request.user,
+            defaults={'value': rating_value}
+        )
+        
+        action = 'added' if created else 'updated'
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Rating {action} successfully',
+            'rating': {
+                'id': rating.id,
+                'value': rating.value,
+                'user': rating.user.username,
+                'is_current_user': True
+            }
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON data'
+        }, status=400)
+    
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred: {str(e)}'
+        }, status=500)
+
+
+def get_ratings(request, project_id):
+    """
+    Get all ratings for a project via AJAX
+    """
+    try:
+        # Get the project
+        project = get_object_or_404(Project, id=project_id)
+        
+        # Get all ratings for this project
+        ratings = Rating.objects.filter(project=project).select_related('user')
+        
+        # Calculate average rating
+        avg_rating = ratings.aggregate(avg=Avg('value'))['avg']
+        
+        # Prepare ratings data
+        ratings_data = []
+        for rating in ratings:
+            ratings_data.append({
+                'id': rating.id,
+                'username': rating.user.username,
+                'value': rating.value,
+            })
+        
+        # Calculate rating distribution (optional)
+        rating_distribution = {}
+        for i in range(1, 6):
+            rating_distribution[i] = ratings.filter(value=i).count()
+        
+        return JsonResponse({
+            'success': True,
+            'average_rating': round(avg_rating, 1) if avg_rating else None,
+            'total_ratings': ratings.count(),
+            'ratings': ratings_data,
+            'rating_distribution': rating_distribution
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred: {str(e)}'
+        }, status=500)
+
+
+def get_comments(request, project_id):
+    """
+    Get all comments for a project via AJAX (optional - for loading comments dynamically)
+    """
+    try:
+        # Get the project
+        project = get_object_or_404(Project, id=project_id)
+        
+        # Get all comments for this project
+        comments = Comment.objects.filter(project=project).select_related('user')
+        
+        # Prepare comments data
+        comments_data = []
+        for comment in comments:
+            comments_data.append({
+                'id': comment.id,
+                'text': comment.text,
+                'user': comment.user.username,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'total_comments': comments.count(),
+            'comments': comments_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred: {str(e)}'
+        }, status=500)
+    
+    
 def similar_projects(request, project_id):
     """Fetch similar projects based on tags"""
     project = get_object_or_404(Project, id=project_id)
@@ -284,4 +410,5 @@ def similar_projects(request, project_id):
         'project': project,
         'similar_projects': similar_projects
     })
+
 
