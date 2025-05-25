@@ -411,4 +411,26 @@ def similar_projects(request, project_id):
         'similar_projects': similar_projects
     })
 
+@login_required
+def report_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.method == 'POST':
+        comment.is_reported = True
+        comment.save()
+        messages.success(request, 'Comment reported successfully.')
+        return redirect('projects:project_details', project_id=comment.project.id)
+    return redirect('projects:project_details', project_id=comment.project.id)
 
+@staff_member_required
+def reported_comments(request):
+    comments = Comment.objects.filter(is_reported=True).select_related('user', 'project')
+    return render(request, 'projects/reported_comments.html', {'comments': comments})
+
+@staff_member_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.method == 'POST':
+        comment.delete()
+        messages.success(request, 'Comment deleted successfully.')
+        return redirect('projects:project_details', project_id=comment.project.id)
+    return redirect('projects:project_details', project_id=comment.project.id)

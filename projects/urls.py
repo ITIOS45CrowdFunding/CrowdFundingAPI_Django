@@ -20,4 +20,7 @@ urlpatterns = [
     path('projects/image/<int:image_id>/delete/', views.delete_image, name='delete_image'),
     path('reported-projects/', views.reported_projects, name='reported_projects'),
     path('project-reports/<int:project_id>/', views.project_reports, name='project_reports'),
+    path('reported-comments/', views.reported_comments, name='reported_comments'),
+    path('delete-comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    path('report-comment/<int:comment_id>/', views.report_comment, name='report_comment'),
 ]

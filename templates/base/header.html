@@ -9,37 +9,48 @@
             CrowdFunding
           </a>
         </div>
-        
+
         <!-- Desktop Navigation Links -->
         <div class="hidden md:ml-8 md:flex md:space-x-1">
-          <a href="{% url 'home:home' %}" 
-             class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
+          <a href="{% url 'home:home' %}"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
             Home
           </a>
-          <a href="{% url 'projects:projects_list' %}" 
-             class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
+          <a href="{% url 'projects:projects_list' %}"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
             Projects
           </a>
-          
+
           {% if user.is_authenticated %}
-            <a href="{% url 'projects:my_projects' %}" 
-               class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
-              My Projects
-            </a>
-            <a href="{% url 'users:donation_list' %}" 
-               class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
-              My Donations
-            </a>
-            
-            {% if user.is_staff %}
-              <a href="{% url 'projects:reported_projects' %}" 
-                 class="text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-red-50 flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                </svg>
-                Reported Projects
-              </a>
-            {% endif %}
+          <a href="{% url 'projects:my_projects' %}"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
+            My Projects
+          </a>
+          <a href="{% url 'users:donation_list' %}"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50">
+            My Donations
+          </a>
+
+          {% if user.is_staff %}
+          <a href="{% url 'projects:reported_projects' %}"
+            class="text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-red-50 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+              </path>
+            </svg>
+            Reported Projects
+          </a>
+          <a href="{% url 'projects:reported_comments' %}"
+            class="text-orange-600 hover:text-orange-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-orange-50 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+              </path>
+            </svg>
+            Reported Comments
+          </a>
+          {% endif %}
           {% endif %}
         </div>
       </div>
@@ -48,74 +59,75 @@
       <div class="flex items-center space-x-4">
         <!-- Search Form -->
         <div class="relative">
-          <form id="search-form" method="get" action="{% url 'projects:projects_list' %}" 
-                autocomplete="off" class="relative">
+          <form id="search-form" method="get" action="{% url 'projects:projects_list' %}" autocomplete="off"
+            class="relative">
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
               </div>
-              <input type="text" name="search" id="search-input"
-                     placeholder="Search projects or tags..."
-                     class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200" />
+              <input type="text" name="search" id="search-input" placeholder="Search projects or tags..."
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200" />
             </div>
-            
+
             <!-- Autocomplete dropdown -->
             <ul id="autocomplete-list"
-                class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-60 overflow-auto hidden">
+              class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-60 overflow-auto hidden">
             </ul>
           </form>
         </div>
 
         <!-- User Section -->
         {% if user.is_authenticated and user.profile %}
-          <div class="flex items-center space-x-3">
-            <!-- Profile Link -->
-            <a href="{% url 'users:profile' %}" 
-               class="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-all duration-200 group">
-              {% if user.profile.image %}
-                <img src="{{ user.profile.image.url }}" alt="Profile"
-                     class="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-200" />
-              {% else %}
-                <img src="{% static 'profile.png' %}" alt="Profile"
-                     class="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-200" />
-              {% endif %}
-              <span class="hidden sm:block text-sm font-medium text-gray-700 group-hover:text-blue-600">
-                Hi, {{ user.first_name|default:user.username }}
-              </span>
-            </a>
+        <div class="flex items-center space-x-3">
+          <!-- Profile Link -->
+          <a href="{% url 'users:profile' %}"
+            class="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-all duration-200 group">
+            {% if user.profile.image %}
+            <img src="{{ user.profile.image.url }}" alt="Profile"
+              class="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-200" />
+            {% else %}
+            <img src="{% static 'profile.png' %}" alt="Profile"
+              class="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-200" />
+            {% endif %}
+            <span class="hidden sm:block text-sm font-medium text-gray-700 group-hover:text-blue-600">
+              Hi, {{ user.first_name|default:user.username }}
+            </span>
+          </a>
 
-            <!-- Logout Button -->
-            <form method="post" action="{% url 'users:logout' %}" class="inline">
-              {% csrf_token %}
-              <button type="submit" 
-                      class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                </svg>
-                Logout
-              </button>
-            </form>
-          </div>
+          <!-- Logout Button -->
+          <form method="post" action="{% url 'users:logout' %}" class="inline">
+            {% csrf_token %}
+            <button type="submit"
+              class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              Logout
+            </button>
+          </form>
+        </div>
         {% else %}
-          <!-- Login/Register Buttons -->
-          <div class="flex items-center space-x-3">
-            <a href="{% url 'users:login' %}" 
-               class="text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors duration-200">
-              Login
-            </a>
-            <a href="{% url 'users:signup' %}" 
-               class="text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors duration-200">
-              Register
-            </a>
-          </div>
+        <!-- Login/Register Buttons -->
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'users:login' %}"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors duration-200">
+            Login
+          </a>
+          <a href="{% url 'users:signup' %}"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors duration-200">
+            Register
+          </a>
+        </div>
         {% endif %}
 
         <!-- Mobile menu button -->
         <div class="md:hidden">
           <button type="button" id="mobile-menu-button"
-                  class="inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+            class="inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
@@ -127,31 +139,31 @@
     <!-- Mobile Navigation Menu -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 bg-gray-50">
-        <a href="{% url 'home:home' %}" 
-           class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
+        <a href="{% url 'home:home' %}"
+          class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
           Home
         </a>
-        <a href="{% url 'projects:projects_list' %}" 
-           class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
+        <a href="{% url 'projects:projects_list' %}"
+          class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
           Projects
         </a>
-        
+
         {% if user.is_authenticated %}
-          <a href="{% url 'projects:my_projects' %}" 
-             class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
-            My Projects
-          </a>
-          <a href="{% url 'users:donation_list' %}" 
-             class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
-            My Donations
-          </a>
-          
-          {% if user.is_staff %}
-            <a href="{% url 'projects:reported_projects' %}" 
-               class="block px-3 py-2 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200">
-              Reported Projects
-            </a>
-          {% endif %}
+        <a href="{% url 'projects:my_projects' %}"
+          class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
+          My Projects
+        </a>
+        <a href="{% url 'users:donation_list' %}"
+          class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200">
+          My Donations
+        </a>
+
+        {% if user.is_staff %}
+        <a href="{% url 'projects:reported_projects' %}"
+          class="block px-3 py-2 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200">
+          Reported Projects
+        </a>
+        {% endif %}
         {% endif %}
       </div>
     </div>
@@ -215,12 +227,12 @@
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
-  mobileMenuButton.addEventListener('click', function() {
+  mobileMenuButton.addEventListener('click', function () {
     mobileMenu.classList.toggle('hidden');
   });
 
   // Close mobile menu when clicking outside
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (!mobileMenuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
       mobileMenu.classList.add('hidden');
     }
