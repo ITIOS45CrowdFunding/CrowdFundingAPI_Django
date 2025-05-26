@@ -460,7 +460,7 @@
                 `;
     
                 // Report button: visible to authenticated users, not the comment owner, and not reported
-                if (commentsData.is_authenticated && !comment.is_user && !comment.is_reported) {
+                if (comment.is_authenticated && !comment.is_user && !comment.is_reported) {
                   commentHTML += `
                     <form method="POST" action="/projects/report-comment/${comment.id}>
                       <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector("#comment-form [name=csrfmiddlewaretoken]").value}">
@@ -470,14 +470,14 @@
                       </button>
                     </form>
                   `;
-                } else if (comment.is_reported) {
+                } else if ( comment.is_reported) {
                   commentHTML += `
                     <span class="border border-red-200 text-red-400 px-2 py-1 rounded text-xs bg-red-50">Reported</span>
                   `;
                 }
     
                 // Delete button: visible to comment owner or staff
-                if (commentsData.is_user || commentsData.is_staff) {
+                if (comment.is_user || comment.is_staff) {
                   commentHTML += `
                     <form method="POST" action="/projects/delete-comment/${comment.id}">
                       <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector("#comment-form [name=csrfmiddlewaretoken]").value}">

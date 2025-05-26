@@ -390,15 +390,16 @@ def get_comments(request, project_id):
                 'text': comment.text,
                 'user': comment.user.username,
                 'is_reported': comment.is_reported,
+                'is_user': comment.user == request.user,
+                'is_authenticated': request.user.is_authenticated,
+                'is_staff': request.user.is_staff, 
+                
             })
         
         return JsonResponse({
             'success': True,
             'total_comments': comments.count(),
             'comments': comments_data,
-            'is_user': comment.user == request.user,
-            'is_staff': request.user.is_staff, 
-            'is_authenticated': request.user.is_authenticated
         })
         
     except Exception as e:
